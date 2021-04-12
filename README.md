@@ -1,5 +1,5 @@
 # pink-wool
-Install script and simple control panel for Minecraft
+Installation script and simple control panel for Minecraft
 
 ## When would I use this?
 If you have a brand new Ubuntu (or equivalent) Linux server and you plan to use it for **only** 1 Minecraft server and you don't care if this script changes whatever it wants to change. Running this to reinstall Minecraft might not work and would be unwise!
