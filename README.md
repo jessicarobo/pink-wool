@@ -18,8 +18,11 @@ The control panel is a Caddy HTTPS server hosting a few PHP files with basic aut
 You will need to be root for the installation.
 
 `sudo -s`
-`wget https://raw.githubusercontent.com/jessicarobo/pink-wool/main/pink-wool.sh
+
+`wget https://raw.githubusercontent.com/jessicarobo/pink-wool/main/pink-wool.sh`
+
 `chmod 700 pink-wool.sh`
+
 `./pink-wool.sh`
 
 It will ask you a number of questions for the control panel and for server.properties, then it should just run until finished.
