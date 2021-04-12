@@ -1,5 +1,5 @@
 # pink-wool
-Installation script and simple control panel for Minecraft
+BASH installation script and simple control panel for Minecraft
 
 ## When would I use this?
 When:
