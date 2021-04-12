@@ -11,9 +11,13 @@ It will ask you a number of questions for the control panel and for server.prope
 For post-install configuration, most of the relevant files will be in /var/opt/minecraft/
 
 ## todo
+
 better readme
+
 more sanitization and error checking on the interactive parts of the script
+
 commandline options
+
 more options in the control panel
 
 ## Contact
