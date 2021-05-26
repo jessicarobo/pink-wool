@@ -1,15 +1,4 @@
 #!/bin/bash
-# pink-wool.sh minecraft installer v0.2
-# by Jessica Robo~
-#
-# Comment or remove this next line for other OSes (untested but I might add them later)
-UBUNTUCHECK="true"
-# Change this if you want a different version of minecraft, but make sure you save it as server.jar
-jarfileURL="https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar"
-# Other variables -- you probably don't need to change these
-rconpass=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c6)
-BADNUMBER="Invalid response. Please enter a number."
-ipaddrshow=$(ip addr show | grep global | grep -oe "[0-9]*\.#!/bin/bash
 # pink-wool.sh minecraft installer and control panel v0.2
 # by Jessica Robo~
 #
