@@ -1,5 +1,5 @@
 #!/bin/bash
-# pink-wool.sh minecraft installer v0.1
+# pink-wool.sh minecraft installer v0.2
 # by Jessica Robo~
 #
 # Comment or remove this next line for other OSes (untested but I might add them later)
