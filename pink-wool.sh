@@ -1,6 +1,7 @@
 #!/bin/bash
-# pink-wool.sh minecraft installer and control panel v0.2
+# pink-wool.sh minecraft installer and control panel v0.3
 # by Jessica Robo~
+# MIT Licensed. Visit https://github.com/jessicarobo/pink-wool for more information
 #
 ########## VARIABLES ###########
 # Comment or remove this next line for other OSes (untested but I might add them later)
