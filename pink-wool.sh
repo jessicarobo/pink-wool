@@ -269,7 +269,6 @@ function showVars() {
 }
 ########## EXECUTION ###########
 clear
-echo -e "Thank you for using \033[1;35mPink Wool\033[0m! If you installed the \033[0;34mcontrol panel\033[0m, it should be available now (https://${ipaddrshow})"
 echo -e "\033[1;35mHiiii! This is Pink Wool, an interactive installer for Minecraft!\033[0m\n\nThis program runs destructively, expecting a completely fresh install of Ubuntu. Don't run it on an existing system, please! Weird things could happen.\n\n(also, by running this, you \033[0;34magree to the Minecraft eula\033[0m, so make sure you read it!)\n\nWe will need to know a few things to get started...\n"
 echo "Sleeping for 5 seconds (ctrl+c now to quit)"
 sleep 5
