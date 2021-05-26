@@ -45,7 +45,7 @@ For post-install configuration, most of the relevant files will be in /var/opt/m
 
 ## Changelog
 
-# v0.2
+### v0.2
 - Can force a backup at any time through the web panel
 - Web panel shows partial server status
 - Panel supports start and stop commands instead of just restart
@@ -58,7 +58,7 @@ For post-install configuration, most of the relevant files will be in /var/opt/m
 - Generally more readable code
 - Slightly less pink page background 🌸
 
-# v0.1
+### v0.1
 - Initial version!
 - Installs vanilla MC
 - Installs a control panel with built-in HTTPS
