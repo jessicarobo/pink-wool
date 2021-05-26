@@ -42,6 +42,9 @@ For post-install configuration, most of the relevant files will be in /var/opt/m
 - commandline arguments
 - ability to fix individual mistakes in the menu without restarting the entire script
 - tutorial video
+- clean up old files like mcrcon installer, so they don't get grabbed in the backup
+- even more consistent style (e.g. case for variables)
+- uninstaller
 
 ## Changelog
 
