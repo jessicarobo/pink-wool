@@ -35,18 +35,25 @@ It will ask you a number of questions for the control panel and for server.prope
 
 For post-install configuration, most of the relevant files will be in /var/opt/minecraft/
 
-## todo
+## To-do
 
-- more detailed readme
-- more sanitization and error checking
 - commandline arguments
-- ability to fix individual mistakes in the menu without restarting the entire script
 - tutorial video
-- clean up old files like mcrcon installer, so they don't get grabbed in the backup
-- even more consistent style (e.g. case for variables)
 - uninstaller
+- updater
+- ability to input rcon commands directly into the web panel
 
 ## Changelog
+
+### v0.3
+- More consistent code style (e.g. camelCase variables)
+- Web panel UI redesign
+- More input validation in the installer
+- Installer lets the user retry/quit/continue
+- Installer understands server.properties defaults
+- Installer has a lot of new cute colors!
+- No longer leaves source .tar.gz or .deb files lying around
+
 
 ### v0.2
 - Can force a backup at any time through the web panel
