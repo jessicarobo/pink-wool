@@ -2,7 +2,7 @@
 BASH installation script and simple control panel for Minecraft
 
 This can:
-- Install Minecraft as a service on a 64-bit Linux server
+- Install Minecraft as a service on a 64-bit apt-based Linux server
 - Configure some of server.properties
 - Create daily .zip backups
 - Create a web-based control panel
@@ -18,6 +18,15 @@ Running this to reinstall Minecraft might not work, and would be unwise!
 The actual server administration uses [mcrcon](https://github.com/Tiiffi/mcrcon), which will be downloaded as part of the install process. RCON itself is firewalled so that it is only available through the control panel
 
 The control panel is a [Caddy](https://caddyserver.com) HTTPS server hosting a few PHP files with basic auth. If you don't have a fully qualified domain name, your cert will be self-signed but functioning. HTTPS is crucial for this setup to be secure.
+
+Tested and working on:
+- Ubuntu 20.04 LTS (recommended)
+- Ubuntu 21.04
+- Mint 20.1
+
+Won't work on:
+- Debian 10 (repositories have Java 11 instead of 16)
+- Debian 11 (repositories have Java 17 instead of 16)
 
 ## Installation
 
@@ -42,6 +51,8 @@ For post-install configuration, most of the relevant files will be in /var/opt/m
 - uninstaller
 - updater
 - ability to input rcon commands directly into the web panel
+- implement (programmer word meaning "steal") xpaw's status php
+- broader distro support
 
 ## Changelog
 
