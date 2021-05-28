@@ -2,14 +2,14 @@
 BASH installation script and simple control panel for Minecraft
 
 This can:
-- Install Minecraft as a service on a 64-bit apt-based Linux server
+- Install Minecraft as a service on a 64-bit Ubuntu Linux server
 - Configure some of server.properties
 - Create daily .zip backups
 - Create a web-based control panel
 
 ## When would I use this?
 When:
-- You have a brand new Ubuntu (or equivalent, specifically with APT) Linux server 
+- You have a brand new Ubuntu (or equivalent, specifically with APT and Java 16 available) Linux server 
 - You plan to use it for **only** 1 Minecraft server and 
 - You don't care if this script runs destructively, changing whatever it wants to change. 
 
