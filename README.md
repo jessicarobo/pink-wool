@@ -2,14 +2,14 @@
 BASH installation script and simple control panel for Minecraft
 
 This can:
-- Install Minecraft as a service on a 64-bit Linux server
+- Install Minecraft as a service on a 64-bit Ubuntu Linux server
 - Configure some of server.properties
 - Create daily .zip backups
 - Create a web-based control panel
 
 ## When would I use this?
 When:
-- You have a brand new Ubuntu (or equivalent, specifically with APT) Linux server 
+- You have a brand new Ubuntu (or equivalent, specifically with APT and Java 16 available) Linux server 
 - You plan to use it for **only** 1 Minecraft server and 
 - You don't care if this script runs destructively, changing whatever it wants to change. 
 
@@ -17,7 +17,16 @@ Running this to reinstall Minecraft might not work, and would be unwise!
 
 The actual server administration uses [mcrcon](https://github.com/Tiiffi/mcrcon), which will be downloaded as part of the install process. RCON itself is firewalled so that it is only available through the control panel
 
-The control panel is a [Caddy](https://caddyserver.com) HTTPS server hosting a few PHP files with basic auth. If you don't have a fully qualified domain name, your cert will be self-signed but functioning. HTTPS is crucial for this setup to be secure.
+The control panel is a [Caddy](https://caddyserver.com) HTTPS server hosting a few PHP files with basic auth. If you don't have a fully qualified domain name, your cert will be self-signed but functioning.
+
+Tested and working on:
+- Ubuntu 20.04 LTS (recommended)
+- Ubuntu 21.04
+- Mint 20.1
+
+Won't work on:
+- Debian 10 (repositories have Java 11 instead of 16)
+- Debian 11 (repositories have Java 17 instead of 16)
 
 ## Installation
 
@@ -33,17 +42,33 @@ You will need to be root for the installation.
 
 It will ask you a number of questions for the control panel and for server.properties, then it should just run until finished.
 
-For post-install configuration, most of the relevant files will be in /var/opt/minecraft/
+![pink-wool installer](pink-wool-install.png)
 
-## todo
+For post-install configuration, most of the relevant files will be in `/var/opt/minecraft/`.
 
-- more detailed readme
-- more sanitization and error checking
+![pink-wool admin panel](pink-wool-panel.png)
+
+## To-do
+
 - commandline arguments
-- ability to fix individual mistakes in the menu without restarting the entire script
 - tutorial video
+- uninstaller
+- updater
+- ability to input rcon commands directly into the web panel
+- implement (programmer word meaning "steal") xpaw's status php
+- broader distro support
 
 ## Changelog
+
+### v0.3
+- More consistent code style (e.g. camelCase variables)
+- Web panel UI redesign
+- More input validation in the installer
+- Installer lets the user retry/quit/continue
+- Installer understands server.properties defaults
+- Installer has a lot of new cute colors!
+- No longer leaves source .tar.gz or .deb files lying around
+
 
 ### v0.2
 - Can force a backup at any time through the web panel
