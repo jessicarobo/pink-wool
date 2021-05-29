@@ -17,7 +17,7 @@ Running this to reinstall Minecraft might not work, and would be unwise!
 
 The actual server administration uses [mcrcon](https://github.com/Tiiffi/mcrcon), which will be downloaded as part of the install process. RCON itself is firewalled so that it is only available through the control panel
 
-The control panel is a [Caddy](https://caddyserver.com) HTTPS server hosting a few PHP files with basic auth. If you don't have a fully qualified domain name, your cert will be self-signed but functioning. HTTPS is crucial for this setup to be secure.
+The control panel is a [Caddy](https://caddyserver.com) HTTPS server hosting a few PHP files with basic auth. If you don't have a fully qualified domain name, your cert will be self-signed but functioning.
 
 Tested and working on:
 - Ubuntu 20.04 LTS (recommended)
@@ -42,7 +42,11 @@ You will need to be root for the installation.
 
 It will ask you a number of questions for the control panel and for server.properties, then it should just run until finished.
 
-For post-install configuration, most of the relevant files will be in /var/opt/minecraft/
+![pink-wool installer](pink-wool-install.png)
+
+For post-install configuration, most of the relevant files will be in `/var/opt/minecraft/`.
+
+![pink-wool admin panel](pink-wool-panel.png)
 
 ## To-do
 
