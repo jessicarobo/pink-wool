@@ -54,9 +54,12 @@ For post-install configuration, most of the relevant files will be in `/var/opt/
 - tutorial video
 - uninstaller
 - updater
-- ability to input rcon commands directly into the web panel
+- ability to input rcon commands directly into the web panel, at the very least `say` and `op`
 - implement (programmer word meaning "steal") xpaw's status php
-- broader distro support
+- broader distro support (get Java for both Debians and later Ubuntus)
+- More consistent style (no colons after questions)
+- Use arrays! Use functions! Clean things more...
+- Put php header/footer into their own files and source those instead of outputting a variable
 
 ## Changelog
 
