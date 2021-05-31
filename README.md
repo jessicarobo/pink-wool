@@ -60,6 +60,7 @@ For post-install configuration, most of the relevant files will be in `/var/opt/
 - More consistent style (no colons after questions)
 - Use arrays! Use functions! Clean things more...
 - Put php header/footer into their own files and source those instead of outputting a variable
+- https://blog.ulysse.io/post/minecraft-server-with-backups-via-systemd/ named pipes might let us get rid of rcon
 
 ## Changelog
 
