@@ -1,0 +1,26 @@
+body {
+	background: linear-gradient(#ffe9f0,75%,#ff4d6e);
+	background-attachment: fixed;
+	color: black;
+	font-family: Arial,Helvetica,"Liberation Sans",sans-serif;
+	font-size: 16px;
+	margin: 2em auto;
+	max-width: 800px;
+}
+h1 {
+	font-family: "Lucida Console",monospace;
+}
+a {
+	text-decoration: none;
+	color: #0623c4;
+}
+footer ul {
+	font-size: 12px;
+	list-style-type: none;
+	padding: 0px;
+}
+footer ul li {
+	text-align: left;
+	display: inline-block;
+	width: 33%;
+}
