@@ -9,7 +9,7 @@ This can:
 
 ## When would I use this?
 When:
-- You have a brand new Ubuntu (or equivalent, specifically with APT and Java 16 available) Linux server 
+- You have a Linux server with a supported distribution
 - You plan to use it for **only** 1 Minecraft server and 
 - You don't care if this script runs destructively, changing whatever it wants to change. 
 
@@ -32,7 +32,7 @@ You will need to be root for the installation.
 
 `sudo -s`
 
-`wget https://raw.githubusercontent.com/jessicarobo/pink-wool/main/pink-wool.sh -O -`
+`wget https://raw.githubusercontent.com/jessicarobo/pink-wool/main/pink-wool.sh -O - | bash`
 
 It will ask you a number of questions for the control panel and for server.properties, then it should just run until finished.
 
@@ -44,7 +44,6 @@ For post-install configuration, most of the relevant files will be in `/var/opt/
 
 ## To-do
 
-- commandline arguments
 - tutorial video
 - uninstaller
 - updater
@@ -52,16 +51,18 @@ For post-install configuration, most of the relevant files will be in `/var/opt/
 - implement (programmer word meaning "steal") xpaw's status php
 - broader distro support (get Java for both Debians and later Ubuntus)
 - More consistent style (no colons after questions)
-- Use arrays! Use functions! Clean things more...
-- Put php header/footer into their own files and source those instead of outputting a variable
-- https://blog.ulysse.io/post/minecraft-server-with-backups-via-systemd/ named pipes might let us get rid of rcon
 
 ## Changelog
 
 ### v1.0.0
 -Semantic versioning (this is the update after v0.3)
 -Modular design: instead of one large shell script with everything in it, the PHP/HTML/CSS is separated out
--Modular design (more): the installer fetches a shell script for the user's specific linux distribution
+-Modular design: the installer fetches a shell script for the user's specific linux distribution
+-Modular design: can upgrade itself over http
+-Commandline arguments, e.g. exec, backup, uninstall
+-Uses standard unix named pipes, so no more mcrcon & greater security
+-Now supports systems with curl instead of wget
+-Broader operating system support
 
 ### v0.3
 - More consistent code style (e.g. camelCase variables)
@@ -71,7 +72,6 @@ For post-install configuration, most of the relevant files will be in `/var/opt/
 - Installer understands server.properties defaults
 - Installer has a lot of new cute colors!
 - No longer leaves source .tar.gz or .deb files lying around
-
 
 ### v0.2
 - Can force a backup at any time through the web panel
