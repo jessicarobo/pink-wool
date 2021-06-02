@@ -15,8 +15,6 @@ When:
 
 Running this to reinstall Minecraft might not work, and would be unwise!
 
-The actual server administration uses [mcrcon](https://github.com/Tiiffi/mcrcon), which will be downloaded as part of the install process. RCON itself is firewalled so that it is only available through the control panel
-
 The control panel is a [Caddy](https://caddyserver.com) HTTPS server hosting a few PHP files with basic auth. If you don't have a fully qualified domain name, your cert will be self-signed but functioning.
 
 Tested and working on:
@@ -34,11 +32,7 @@ You will need to be root for the installation.
 
 `sudo -s`
 
-`wget https://raw.githubusercontent.com/jessicarobo/pink-wool/main/pink-wool.sh`
-
-`chmod 700 pink-wool.sh`
-
-`./pink-wool.sh`
+`wget https://raw.githubusercontent.com/jessicarobo/pink-wool/main/pink-wool.sh -O -`
 
 It will ask you a number of questions for the control panel and for server.properties, then it should just run until finished.
 
@@ -63,6 +57,11 @@ For post-install configuration, most of the relevant files will be in `/var/opt/
 - https://blog.ulysse.io/post/minecraft-server-with-backups-via-systemd/ named pipes might let us get rid of rcon
 
 ## Changelog
+
+### v1.0.0
+-Semantic versioning (this is the update after v0.3)
+-Modular design: instead of one large shell script with everything in it, the PHP/HTML/CSS is separated out
+-Modular design (more): the installer fetches a shell script for the user's specific linux distribution
 
 ### v0.3
 - More consistent code style (e.g. camelCase variables)
