@@ -3,7 +3,7 @@ DEPENDENCIES="openjdk-16-jre-headless ufw zip php-fpm"
 caddyVersion="2.3.0"
 if [[ ! $(which apt) ]]; then 
 	echo "This script is intended for Debian/Ubuntu and requires APT, but couldn't find it." 
-exit 90
+	exit 90
 fi
 apt update -y
 apt upgrade -y
