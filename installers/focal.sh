@@ -1,6 +1,8 @@
 #!/bin/bash
-DEPENDENCIES="openjdk-16-jre-headless ufw zip php7.4-fpm"
-testExit "[[ ! $(which apt) ]]" "This script is intended for Debian/Ubuntu and requires APT, but couldn't find it." 90
+DEPENDENCIES="openjdk-16-jre-headless ufw zip php-fpm"
+if [[ ! $(which apt) ]]; then 
+	echo "This script is intended for Debian/Ubuntu and requires APT, but couldn't find it." 
+exit 90
 apt update -y
 apt upgrade -y
 apt install -y $DEPENDENCIES
