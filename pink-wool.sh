@@ -122,16 +122,14 @@ function getInstaller() {
         ;;
     esac
 	dload $BASEURL/$BRANCH/installers/$installName - | bash
-	#chmod o+x pwinstaller$$.sh
-	#. pwinstaller$$.sh
-	debugWait 5 "wheres my supersuit"
-	# rm pwinstaller$$.sh
 	return 0
 }
 function setPermissions() {
-	chown -R minecraft:minecraft ${INSTALLPATH}
-	chmod 700 ${INSTALLPATH}minecraft-st*
-	chmod -R 770 ${INSTALLPATH}www/admin/backups
+	chown -R minecraft:minecraft ${INSTALLPATH} &> /dev/null
+	chown -R www-data:minecraft ${INSTALLPATH}www/ &> /dev/null
+	chmod 700 ${INSTALLPATH}minecraft-st* &> /dev/null
+	chmod -R 660 ${INSTALLPATH}www/admin/backups &> /dev/null
+	chmod 440 ${INSTALLPATH}console.out &> /dev/null
 }
 function victory() {
 clear
@@ -172,6 +170,7 @@ function downloadPanel() {
 	dload $BASEURL/$BRANCH/panel/backup.php admin/backup.php
 	dload $BASEURL/$BRANCH/pink-wool.sh /usr/sbin/pink-wool
 	testExit "[[ $? -ne 0 ]]" "Couldn't download panel: err $?" 103
+	chmod 500 /usr/sbin/pink-wool
 }
 function pwUpdate() {
 	testExit "[[ $EUID -ne 0 ]]" "You need to be root (sudo -s)" 91
@@ -279,8 +278,8 @@ function pwMenu() {
 }
 function pwExec() {
 	# pwExec "command"
-	testExit "[[ ! -p ${INSTALLPATH}/console.in ]]" "Pipe not found" 105
-	echo "$1" > ${INSTALLPATH}/console.in
+	testExit "[[ ! -p ${INSTALLPATH}console.in ]]" "Pipe not found" 105
+	echo "$1\r" > ${INSTALLPATH}console.in
 	return $?
 }
 function serverProps() {
@@ -400,15 +399,15 @@ WantedBy=multi-user.target
 EOS
 	cat << EOA > ${INSTALLPATH}minecraft-start.sh
 #!/bin/bash
-tail -f ${INSTALLPATH}/console.in | /usr/bin/java -Xms${dedotated}M -Xmx${dedotated}M -XX:+UseG1GC -jar ${INSTALLPATH}server.jar nogui
+tail -f ${INSTALLPATH}console.in | /usr/bin/java -Xms${dedotated}M -Xmx${dedotated}M -XX:+UseG1GC -jar ${INSTALLPATH}server.jar nogui > ${INSTALLPATH}console.out
 EOA
 	cat << EOB > ${INSTALLPATH}minecraft-stop.sh
 #!/bin/bash
-echo 'say shutting down...' > ${INSTALLPATH}/console.in 
+echo "say shutting down...\r" > ${INSTALLPATH}console.in 
 sleep 3
-echo 'save-all' > ${INSTALLPATH}/console.in 
+echo "save-all\r" > ${INSTALLPATH}console.in 
 sleep 3
-echo 'stop' > ${INSTALLPATH}/console.in 
+echo "stop\r" > ${INSTALLPATH}console.in 
 EOB
 	setPermissions
 	systemctl daemon-reload
@@ -459,7 +458,15 @@ function showVars() {
 		done
 	fi
 }
-function getPanel() {
+function setFirewall() {
+	ufw default deny incoming &> /dev/null
+	ufw default allow outgoing &> /dev/null
+	ufw allow 443 &> /dev/null
+	ufw allow ssh &> /dev/null
+	ufw allow 25565 &> /dev/null
+	service ufw restart &> /dev/null
+}
+function panelInstaller() {
 httpPass=$(caddy hash-password --plaintext "$httpPass")
 cat <<EOC > /etc/caddy/Caddyfile
 $ipAddrShow, $serverHostname
@@ -597,19 +604,12 @@ EODEFAULT
 	useradd -r -m -U -d ${INSTALLPATH} -s /bin/false minecraft
 	# this next line is super important -- downloads a per-distro script to get java, caddy, etc
 	getInstaller
-	downloadPanel
+	cd $INSTALLPATH
 	/usr/bin/java -Xms${dedotated}M -Xmx${dedotated}M -jar ${INSTALLPATH}server.jar nogui
 	# should be eula.txt here now
 	testExit '[[ ! -w "eula.txt" ]]' "Something weird happened... there should be a writeable eula.txt here and there isn't. Maybe that means java didn't run successfully. Sorry, but this error is super fatal! Quitting~" 99
 	setPermissions
-	# firewall
-	ufw default deny incoming
-	ufw default allow outgoing
-	ufw allow 443
-	ufw allow ssh
-	ufw allow 25565
-	ufw allow from 127.0.0.1 to any port 25575
-	service ufw restart
+	setFirewall
 	# agree to eula
 	sed -i 's/^eula=false/eula=true/' eula.txt
 	# sets up the system service
@@ -620,11 +620,12 @@ EODEFAULT
 	testExit "[[ $? -gt 0 ]]" "Oh no... system service! Why??" 97
 	# installs cronjobs if they were requested
 	backupCron
-	getPanel
+	# installs the panel, here maybe?
+	panelInstaller
 	echo 'Waiting for Minecraft to finish world generation...'
 	i=0
 	while [[ -z $worldDone ]]; do
-		service minecraft status | grep 'Done'
+		grep 'Done' ${INSTALLPATH}console.out
 		if [[ $? -eq 0 ]]; then
 			worldDone=true
 			break
@@ -635,7 +636,6 @@ EODEFAULT
 		fi
 	done
 	setPermissions
-	# apparently this is needed or occasionally you'll try to op before minecraft is ready
 	sleep 2
 	echo "op $mcUser" > ${INSTALLPATH}console.in
 	testExit "[[ $? -gt 0 ]]" 'Something went wrong right at the end??' 98
@@ -671,8 +671,19 @@ case $1 in
 		pwExec $2
 		exit 0
 	;;
+	# secret options :o
+	"start")
+		service minecraft start
+	;;
+	"stop")
+		service minecraft stop
+	;;
+	"restart")
+		service minecraft restart
+	;;
 	*)
 		pwHelp
 		exit 0
 	;;
 esac
+exit 1
