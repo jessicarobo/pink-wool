@@ -7,7 +7,7 @@
 	<h1>Backup</h1>
 	<?php
 		exec("sudo /usr/sbin/pink-wool backup",$out,$err);
-		if ($err >= 1) {
+		if ($err >= 2) {
 			echo "<h2>Zip error (exit status $err)</h2>";
 		}
 		else {
