@@ -108,7 +108,7 @@ function getInstaller() {
     source /etc/os-release
     # first ubuntu and debian
     case $VERSION_CODENAME in
-       "focal" | "ulyana")
+       "focal" | "ulyssa")
 			installName="focal.sh" 
 		;;
        "buster")
@@ -124,10 +124,11 @@ function getInstaller() {
 }
 function setPermissions() {
 	chown -R minecraft:minecraft ${INSTALLPATH} &> /dev/null
-	chown -R www-data:minecraft ${INSTALLPATH}www/ &> /dev/null
+	chown -R www-data:caddy ${INSTALLPATH}www/ &> /dev/null
 	chmod 700 ${INSTALLPATH}minecraft-st* &> /dev/null
-	chmod -R 660 ${INSTALLPATH}www/admin/backups &> /dev/null
+	chmod -R 770 ${INSTALLPATH}www/admin/backups &> /dev/null
 	chmod 660 ${INSTALLPATH}console.* &> /dev/null
+	usermod -G caddy -a minecraft
 }
 function victory() {
 clear
@@ -153,6 +154,7 @@ exit 0
 function pwBackup() {
 	testExit  "[[ ! -d ${INSTALLPATH}www/admin/backups/ ]]" "Backup directory doesn't exist" 104
 	/usr/bin/zip -r ${INSTALLPATH}www/admin/backups/minecraft-$(date +%F-%H%M).zip ${INSTALLPATH} -x *.sh -x *.zip
+	chown caddy:minecraft ${INSTALLPATH}www/admin/backups/*
 	return 0
 }
 function downloadPanel() {
@@ -229,11 +231,8 @@ function readGreen() {
 }
 function pwUninstall() {
 	testExit "[[ $EUID -ne 0 ]]" "You need to be root (sudo -s)" 91
-	echo 'not done'
-	exit 1
-	# seriously though
 	echo "Really uninstall?? This is going to delete Minecraft and the website"
-	sleep 3
+	sleep 1
 	readGreen 1 "Uninstall?" reallyUninstall
 		case $reallyUninstall in
 			1|y|Y)
@@ -246,6 +245,7 @@ function pwUninstall() {
 				rm /etc/cron.d/minecraft-backup
 				rm -f /usr/sbin/pink-wool
 				testExit "[[ -f /usr/sbin/pink-wool ]]" "Didn't work :o" 110
+				deluser minecraft &> /dev/null
 				victory uninstall
 			;;
 			*)
@@ -400,8 +400,6 @@ After=network.target
 [Service]
 User=minecraft
 Group=minecraft
-KillMode=none
-SuccessExitStatus=0 1
 
 Restart=always
 RestartSec=30
@@ -422,6 +420,11 @@ EOS
 	cat << EOA > ${INSTALLPATH}minecraft-start.sh
 #!/bin/bash
 while true; do cat ${INSTALLPATH}console.in; done | /usr/bin/java -Xms${dedotated}M -Xmx${dedotated}M -XX:+UseG1GC -jar ${INSTALLPATH}server.jar nogui > ${INSTALLPATH}console.out
+if [[ ! \$(pidof java) ]]; then
+	exit 1
+fi
+systemd-notify READY=1
+exit 0
 EOA
 	cat << EOB > ${INSTALLPATH}minecraft-stop.sh
 #!/bin/bash
@@ -431,7 +434,6 @@ echo "save-all" > ${INSTALLPATH}console.in
 sleep 3
 echo "stop" > ${INSTALLPATH}console.in 
 EOB
-	setPermissions
 	systemctl daemon-reload
 }
 function backupCron() {
@@ -636,18 +638,20 @@ EODEFAULT
 	testExit '[[ ! -w "eula.txt" ]]' "Something weird happened... there should be a writeable eula.txt here and there isn't. Maybe that means java didn't run successfully. Sorry, but this error is super fatal! Quitting~" 99
 	sed -i 's/^eula=false/eula=true/' eula.txt
 	echo -e $GOK
-	setPermissions
+	panelInstaller
+	# oops, needed this
+	cd $INSTALLPATH
 	setFirewall
 	# sets up the system service
 	makeService
 	# rcon replacement
 	mkfifo console.in
-	service minecraft start
-	testExit "[[ $? -gt 0 ]]" "Oh no... system service! Why??" 97
+	touch console.out
 	# installs cronjobs if they were requested
 	backupCron
-	# installs the panel, here maybe?
-	panelInstaller
+	setPermissions
+	service minecraft start
+	testExit "[[ $? -gt 0 ]]" "Oh no... system service! Why??" 97
 	echo -e "\e[1;35mWaiting for Minecraft to finish world generation...\e[0m"
 	i=0
 	while [[ -z $worldDone ]]; do
@@ -661,7 +665,6 @@ EODEFAULT
 					echo "$i seconds..."
 		fi
 	done
-	setPermissions
 	sleep 2
 	echo "op $mcUser" > ${INSTALLPATH}console.in
 	testExit "[[ $? -gt 0 ]]" 'Something went wrong right at the end??' 98
