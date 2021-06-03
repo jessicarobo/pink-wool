@@ -36,15 +36,15 @@ function testExit() {
 function dload() {
 	#dload URL OUTPUT
 	if [[ -z $dlCommand ]]; then
-		which wget
+		which wget &> /dev/null
 		if [[ $? -eq 0 ]]; then
-			wget -O $2 $1
+			wget -q -O $2 $1
 			return 0
 		else
 			which curl
 			testExit "[[ $? -ne 0 ]]" "wget and curl not found" 102
 			# otherwise, I guess curl was found
-			curl $1 -o $2
+			curl -s -o $2 $1
 		fi
 	fi
 }
@@ -108,7 +108,6 @@ function getInstaller() {
     # this file comes with most distros and has a bunch of shell variables
     source /etc/os-release
     # first ubuntu and debian
-	echo $VERSION_CODENAME
     case $VERSION_CODENAME in
        "focal" | "ulyana")
 			installName="focal.sh" 
@@ -154,7 +153,7 @@ exit 0
 }
 function pwBackup() {
 	testExit  "[[ -d ${INSTALLPATH}www/admin/backups/ ]]" "Backup directory doesn't exist" 104
-	/usr/bin/zip -r ${INSTALLPATH}www/admin/backups/minecraft-$(date +%F-+%H-+%M).zip ${INSTALLPATH} -x ${INSTALLPATH}www/admin/backups/
+	/usr/bin/zip -r ${INSTALLPATH}www/admin/backups/minecraft-$(date +%F-+%H-+%M).zip ${INSTALLPATH} -x \*.sh -x minecraft\*.zip
 	return 0
 }
 function downloadPanel() {
