@@ -17,4 +17,5 @@ if [[ ! $(which java) ]]; then
 	echo "Failed to install dependencies (Java not found)"
 	exit 106
 fi
+echo "OK!"
 exit 0
