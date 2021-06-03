@@ -127,7 +127,7 @@ function setPermissions() {
 	chown -R www-data:minecraft ${INSTALLPATH}www/ &> /dev/null
 	chmod 700 ${INSTALLPATH}minecraft-st* &> /dev/null
 	chmod -R 660 ${INSTALLPATH}www/admin/backups &> /dev/null
-	chmod 440 ${INSTALLPATH}console.out &> /dev/null
+	chmod 660 ${INSTALLPATH}console.* &> /dev/null
 }
 function victory() {
 clear
@@ -151,15 +151,17 @@ echo -e "$HEARTS"
 exit 0
 }
 function pwBackup() {
-	testExit  "[[ -d ${INSTALLPATH}www/admin/backups/ ]]" "Backup directory doesn't exist" 104
-	/usr/bin/zip -r ${INSTALLPATH}www/admin/backups/minecraft-$(date +%F-+%H-+%M).zip ${INSTALLPATH} -x \*.sh -x minecraft\*.zip
+	testExit  "[[ ! -d ${INSTALLPATH}www/admin/backups/ ]]" "Backup directory doesn't exist" 104
+	/usr/bin/zip -r ${INSTALLPATH}www/admin/backups/minecraft-$(date +%F-%H%M).zip ${INSTALLPATH} -x *.sh -x *.zip
 	return 0
 }
 function downloadPanel() {
 	cd ${INSTALLPATH}www
 	testExit "[[ $? -ne 0 ]]" "Couldn't change to the panel directory... does it exist??" 102
-	dload $BASEURL/$BRANCH/panel/index.php index.php
-	testExit "[[ $? -ne 0 ]]" "Couldn't download panel: err $?" 103
+	if [[ ! -f index.php ]]; then
+		dload $BASEURL/$BRANCH/panel/index.php index.php
+		testExit "[[ $? -ne 0 ]]" "Couldn't download panel: err $?" 103
+	fi
 	dload $BASEURL/$BRANCH/panel/pink-wool.css pink-wool.css
 	dload $BASEURL/$BRANCH/panel/header.php header.php
 	dload $BASEURL/$BRANCH/panel/footer.php footer.php
@@ -226,9 +228,31 @@ function readGreen() {
 	read -e -n $1 -p $'\e[1;32m'"$2"$'\e[0m >' $3
 }
 function pwUninstall() {
-testExit "[[ $EUID -ne 0 ]]" "You need to be root (sudo -s)" 91
-echo 'not done'
-exit 1
+	testExit "[[ $EUID -ne 0 ]]" "You need to be root (sudo -s)" 91
+	echo 'not done'
+	exit 1
+	# seriously though
+	echo "Really uninstall?? This is going to delete Minecraft and the website"
+	sleep 3
+	readGreen 1 "Uninstall?" reallyUninstall
+		case $reallyUninstall in
+			1|y|Y)
+				service minecraft stop
+				if [[ -z $INSTALLPATH ]]; then
+					echo 'hm'
+					exit 109
+				fi
+				rm -rf ${INSTALLPATH}
+				rm /etc/cron.d/minecraft-backup
+				rm -f /usr/sbin/pink-wool
+				testExit "[[ -f /usr/sbin/pink-wool ]]" "Didn't work :o" 110
+				victory uninstall
+			;;
+			*)
+				echo "Doing nothing"
+			;;
+		esac
+	exit 0
 }
 function pwMenu() {
 	unset mainMenuAction
@@ -277,7 +301,7 @@ function pwMenu() {
 function pwExec() {
 	# pwExec "command"
 	testExit "[[ ! -p ${INSTALLPATH}console.in ]]" "Pipe not found" 105
-	echo "$1\r" > ${INSTALLPATH}console.in
+	echo "$1" > ${INSTALLPATH}console.in
 	return $?
 }
 function serverProps() {
@@ -401,11 +425,11 @@ while true; do cat ${INSTALLPATH}console.in; done | /usr/bin/java -Xms${dedotate
 EOA
 	cat << EOB > ${INSTALLPATH}minecraft-stop.sh
 #!/bin/bash
-echo "say shutting down...\r" > ${INSTALLPATH}console.in 
+echo "say shutting down..." > ${INSTALLPATH}console.in 
 sleep 3
-echo "save-all\r" > ${INSTALLPATH}console.in 
+echo "save-all" > ${INSTALLPATH}console.in 
 sleep 3
-echo "stop\r" > ${INSTALLPATH}console.in 
+echo "stop" > ${INSTALLPATH}console.in 
 EOB
 	setPermissions
 	systemctl daemon-reload
@@ -413,8 +437,8 @@ EOB
 function backupCron() {
 	if [[ $backupMinute -ge 0 ]]; then
 		mkdir ${INSTALLPATH}www/admin/backups
-		echo "$backupMinute $backupHour * * * minecraft /usr/bin/zip -r ${INSTALLPATH}www/admin/backups/minecraft-$(date +%F-+%H-+%M).zip ${INSTALLPATH}world/" > /etc/cron.d/minecraft-backup
-		echo '55 23 * * * minecraft	/usr/bin/find ${INSTALLPATH}www/admin/backups/ -name "*.zip" -type f -mtime +7 -delete' >> /etc/cron.d/minecraft-backup
+		echo "$backupMinute $backupHour * * * minecraft /usr/bin/zip -r ${INSTALLPATH}www/admin/backups/minecraft-$(date +%F-%H-%M).zip ${INSTALLPATH} -x *.sh -x *.zip &> /dev/null" > /etc/cron.d/minecraft-backup
+		echo "55 23 * * * minecraft	/usr/bin/find ${INSTALLPATH}www/admin/backups/ -name \*.zip -type f -mtime +7 -delete &> /dev/null" >> /etc/cron.d/minecraft-backup
 	fi
 	return 0
 }
@@ -443,7 +467,7 @@ function showVars() {
 					;;
 				2)
 					unset armageddon
-					$EDITOR ${INSTALLPATH}server.properties
+					vi ${INSTALLPATH}server.properties
 					;;
 				3)
 					exit 0
@@ -469,8 +493,8 @@ function setFirewall() {
 	service ufw restart &> /dev/null
 }
 function panelInstaller() {
-httpPass=$(caddy hash-password --plaintext "$httpPass")
-cat <<EOC > /etc/caddy/Caddyfile
+	httpPass=$(caddy hash-password --plaintext "$httpPass")
+	cat <<EOC > /etc/caddy/Caddyfile
 $ipAddrShow, $serverHostname
 root * ${INSTALLPATH}www
 file_server 
@@ -479,9 +503,9 @@ basicauth /admin/* {
 	$httpUser $httpPass
 }
 EOC
-echo '$ a www-data ALL=(ALL) NOPASSWD:/usr/sbin/pink-wool' | EDITOR="sed -f- -i" visudo
-downloadPanel
-service caddy restart
+	echo '$ a www-data ALL=(ALL) NOPASSWD:/usr/sbin/pink-wool' | EDITOR="sed -f- -i" visudo
+	downloadPanel
+	service caddy restart
 }
 function pwInstall() {
 	testExit "[[ $EUID -ne 0 ]]" "You need to be root (sudo -s)" 91
@@ -624,7 +648,7 @@ EODEFAULT
 	backupCron
 	# installs the panel, here maybe?
 	panelInstaller
-	echo 'Waiting for Minecraft to finish world generation...'
+	echo -e "\e[1;35mWaiting for Minecraft to finish world generation...\e[0m"
 	i=0
 	while [[ -z $worldDone ]]; do
 		grep 'Done' ${INSTALLPATH}console.out
@@ -677,6 +701,9 @@ case $1 in
 	"start"|"stop"|"status"|"restart")
 		service minecraft $1
 		exit 0
+	;;
+	"backup")
+		pwBackup
 	;;
 	*)
 		pwHelp
