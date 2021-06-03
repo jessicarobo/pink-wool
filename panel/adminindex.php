@@ -1,10 +1,12 @@
-<?php include("/var/opt/minecraft/www/header.php"); ?>
+<?php 
+	include("/var/opt/minecraft/www/header.php");
+?>
 	<title>Pink Wool Admin Panel</title>
 </head>
 <body>
   <h1>Pink Wool Admin Panel</h1>
 	<?php
-		exec("sudo /usr/sbin/service minecraft status",$out,$err);
+		exec("sudo /usr/sbin/pink-wool status",$out,$err);
 		echo '<h2>Backend status:</h2><ol>';
 		foreach ($out as $o) {
 			echo "<li>$o</li>";
