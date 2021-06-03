@@ -8,7 +8,7 @@
 		if (!in_array($action, ['start','restart','stop'], true )) {
 			exit(2);
 		}
-		exec("sudo /usr/sbin/service minecraft $action",$out,$err);
+		exec("sudo /usr/sbin/pink-wool $action",$out,$err);
 		if ($err == 0) {
 			echo "<h2>$action command sent successfully...</h2>";
 			echo "<p>This means the server is now attempting to $action Java and Minecraft. It could take a long time, depending on your system's speed. Check the admin panel to see the server's status.</p>";
