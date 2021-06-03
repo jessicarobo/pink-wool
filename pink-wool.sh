@@ -5,8 +5,6 @@
 # vim: set noet ts=4 sw=4 :
 #
 ########## VARIABLES ###########
-# Comment or remove this next line for other OSes (untested but I might add them later)
-aptCheck="true"
 # Change this if you want a different version of minecraft, but make sure you save it as server.jar
 jarfileURL="https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar"
 paperURL="https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/728/downloads/paper-1.16.5-728.jar"
@@ -22,6 +20,7 @@ BASEURL='https://raw.githubusercontent.com/jessicarobo/pink-wool'
 BRANCH='dev' # CHANGE THIS TO MAIN WHEN YOU COMMIT, YA DOPE    debug r0b0 jjdasda}
 BADNUMBER="Invalid response. Please enter a number."
 HEARTS='\e[1;31m<3 <3 <3\e[0m ~Jessica'
+GOK='...\e[1;32mOK!\e[0m'
 # I really wouldn't change this
 INSTALLPATH="/var/opt/minecraft/"
 ########## FUNCTIONS ###########
@@ -398,7 +397,7 @@ WantedBy=multi-user.target
 EOS
 	cat << EOA > ${INSTALLPATH}minecraft-start.sh
 #!/bin/bash
-tail -f ${INSTALLPATH}console.in | /usr/bin/java -Xms${dedotated}M -Xmx${dedotated}M -XX:+UseG1GC -jar ${INSTALLPATH}server.jar nogui > ${INSTALLPATH}console.out
+while true; do cat ${INSTALLPATH}console.in; done | /usr/bin/java -Xms${dedotated}M -Xmx${dedotated}M -XX:+UseG1GC -jar ${INSTALLPATH}server.jar nogui > ${INSTALLPATH}console.out
 EOA
 	cat << EOB > ${INSTALLPATH}minecraft-stop.sh
 #!/bin/bash
@@ -432,7 +431,7 @@ function showVars() {
 	readGreen 1 'Is everything okay? (Y/n)' menuOK
 	if [[ $menuOK == "n" || $menuOK == "N" ]]; then
 		while [[ -z $armageddon ]]; do
-			numberPrompt "Redo server properties" "Quit" "Just kidding! Continue"
+			numberPrompt "Redo server properties menu" "Edit server properties manually" "Quit" "Just kidding! Continue"
 			readGreen 1 "What now??" armageddon
 			case $armageddon in
 				1)
@@ -443,9 +442,13 @@ function showVars() {
 					return 0
 					;;
 				2)
-					exit 0
+					unset armageddon
+					$EDITOR ${INSTALLPATH}server.properties
 					;;
 				3)
+					exit 0
+					;;
+				4)
 					unset armageddon
 					break
 					;;
@@ -600,17 +603,17 @@ EODEFAULT
 	done
 	# jar file
 	eval $downloadEval
-	useradd -r -m -U -d ${INSTALLPATH} -s /bin/false minecraft
-	# this next line is super important -- downloads a per-distro script to get java, caddy, etc
+	useradd -r -m -U -d ${INSTALLPATH} -s /bin/false minecraft &> /dev/null
+	# downloads a per-distro script to get java, caddy, etc
 	getInstaller
 	cd $INSTALLPATH
-	/usr/bin/java -Xms${dedotated}M -Xmx${dedotated}M -jar ${INSTALLPATH}server.jar nogui
-	# should be eula.txt here now
+	echo "Running Minecraft once so we can generate a eula.txt & agree to it..."
+	/usr/bin/java -jar ${INSTALLPATH}server.jar nogui
 	testExit '[[ ! -w "eula.txt" ]]' "Something weird happened... there should be a writeable eula.txt here and there isn't. Maybe that means java didn't run successfully. Sorry, but this error is super fatal! Quitting~" 99
+	sed -i 's/^eula=false/eula=true/' eula.txt
+	echo -e $GOK
 	setPermissions
 	setFirewall
-	# agree to eula
-	sed -i 's/^eula=false/eula=true/' eula.txt
 	# sets up the system service
 	makeService
 	# rcon replacement
@@ -671,14 +674,9 @@ case $1 in
 		exit 0
 	;;
 	# secret options :o
-	"start")
-		service minecraft start
-	;;
-	"stop")
-		service minecraft stop
-	;;
-	"restart")
-		service minecraft restart
+	"start"|"stop"|"status"|"restart")
+		service minecraft $1
+		exit 0
 	;;
 	*)
 		pwHelp
