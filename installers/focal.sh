@@ -5,10 +5,16 @@ if [[ ! $(which apt) ]]; then
 	echo "This script is intended for Debian/Ubuntu and requires APT, but couldn't find it." 
 	exit 90
 fi
-apt update -y
-apt upgrade -y
-apt install -y $DEPENDENCIES
+echo "Using 'focal.sh' to run APT and dpkg commands..."
+apt update -y &> /dev/null
+apt upgrade -y &> /dev/null
+apt install -y $DEPENDENCIES &> /dev/null
 # get caddy 
-wget https://github.com/caddyserver/caddy/releases/download/v${caddyVersion}/caddy_${caddyVersion}_linux_amd64.deb
-dpkg -i caddy_${caddyVersion}_linux_amd64.deb
-rm caddy_${caddyVersion}_linux_amd64.deb
+wget https://github.com/caddyserver/caddy/releases/download/v${caddyVersion}/caddy_${caddyVersion}_linux_amd64.deb &> /dev/null
+dpkg -i caddy_${caddyVersion}_linux_amd64.deb &> /dev/null
+rm caddy_${caddyVersion}_linux_amd64.deb &> /dev/null
+if [[ ! $(which java) ]]; then 
+	echo "Failed to install dependencies (Java not found)"
+	exit 106
+fi
+exit 0
