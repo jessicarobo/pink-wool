@@ -28,7 +28,7 @@ echo -e "$GOK"
 if [[ $getCaddy ]]; then
 	echo "Getting Caddy webserver..."
 	dnf copr enable -y @caddy/caddy
-	dnf install caddy
+	dnf install -y caddy
 	if [[ ! $(which caddy) ]]; then 
 		echo "Failed to install dependencies (Caddy not found)"
 		exit 106
