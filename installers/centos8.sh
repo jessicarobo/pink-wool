@@ -1,7 +1,7 @@
 #!/bin/bash
 # Pink Wool installer for Centos 8
 getCaddy="true"
-javaRpm="zulu16.30.15-ca-jre16.0.1-linux.x86-64.rpm"
+javaRpm="zulu16.30.15-ca-jre16.0.1-linux.x86_64.rpm"
 dependencies="zip php-fpm"
 if [[ $PWNOPANEL ]]; then
 	unset dependencies
@@ -27,7 +27,7 @@ fi
 echo -e "$GOK"
 if [[ $getCaddy ]]; then
 	echo "Getting Caddy webserver..."
-	dnf copr enable @caddy/caddy
+	dnf copr enable -y @caddy/caddy
 	dnf install caddy
 	if [[ ! $(which caddy) ]]; then 
 		echo "Failed to install dependencies (Caddy not found)"
