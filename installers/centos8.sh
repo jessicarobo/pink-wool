@@ -2,7 +2,7 @@
 # Pink Wool installer for Centos 8
 getCaddy="true"
 javaRpm="zulu16.30.15-ca-jre16.0.1-linux.x86_64.rpm"
-dependencies="zip php-fpm"
+dependencies="zip php-fpm php-cli"
 if [[ $PWNOPANEL ]]; then
 	unset dependencies
 	unset getCaddy
