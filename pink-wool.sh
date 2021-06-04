@@ -8,7 +8,6 @@
 # Change this if you want a different version of minecraft, but make sure you save it as server.jar
 jarfileURL="https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar"
 paperURL="https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/728/downloads/paper-1.16.5-728.jar"
-caddyVersion="2.3.0"
 # Other variables and constants -- you probably don't need to change these
 ipAddrShow=$(ip addr show | grep global | grep -oe "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | head -n 1 )
 megsFree=$(df -BM | grep -e "/$" | awk '{print $4}' | grep -oe '[0-9]*')
@@ -17,18 +16,58 @@ dedotated=$(expr $ramFree - 200)
 defaultMotd='A Pink Wool server \\u00A7d^O^'
 PWVERSION='1.0.0'
 BASEURL='https://raw.githubusercontent.com/jessicarobo/pink-wool'
-BRANCH='dev' # CHANGE THIS TO MAIN WHEN YOU COMMIT, YA DOPE    debug r0b0 jjdasda}
+BRANCH='dev' # CHANGE THIS TO MAIN WHEN YOU COMMIT, YA DOPE   debug r0b0 jjdasda}
+CADDYVERSION="2.3.0"
+export CADDYVERSION
 BADNUMBER="Invalid response. Please enter a number."
 HEARTS='\e[1;31m<3 <3 <3\e[0m ~Jessica'
 GOK='...\e[1;32mOK!\e[0m'
+export GOK
 # I really wouldn't change this
 INSTALLPATH="/var/opt/minecraft/"
+SERVERPROPS="#Minecraft server properties
+#(last boot timestamp)
+spawn-protection=16
+max-tick-time=60000
+query.port=25565
+force-gamemode=false
+allow-nether=true
+gamemode=survival
+enable-query=false
+player-idle-timeout=0
+difficulty=easy
+spawn-monsters=true
+op-permission-level=4
+pvp=true
+level-type=default
+enable-status=true
+hardcore=false
+enable-command-block=false
+max-players=20
+max-world-size=29999984
+function-permission-level=2
+rcon.port=25575
+server-port=25565
+spawn-npcs=true
+allow-flight=false
+level-name=world
+view-distance=10
+spawn-animals=true
+white-list=false
+rcon.password=
+generate-structures=true
+online-mode=true
+level-seed=
+prevent-proxy-connections=false
+use-native-transport=true
+motd=${defaultMotd}
+enable-rcon=false"
 ########## FUNCTIONS ###########
 function testExit() {
 	# tests a thing, echoes a thing, exits
 	# testExit TEST ECHO_MESSAGE EXIT_CODE
 	if eval $1; then
-		echo $2
+		echo "$2"
 		exit $3
 	fi
 }
@@ -37,13 +76,13 @@ function dload() {
 	if [[ -z $dlCommand ]]; then
 		which wget &> /dev/null
 		if [[ $? -eq 0 ]]; then
-			wget -q -O $2 $1
+			wget -q -O "$2" $1
 			return 0
 		else
 			which curl
 			testExit "[[ $? -ne 0 ]]" "wget and curl not found" 102
 			# otherwise, I guess curl was found
-			curl -s -o $2 $1
+			curl -s -o "$2" $1
 		fi
 	fi
 }
@@ -100,25 +139,25 @@ function editProp() {
 	sed -i "s/^$1=.*$/$1=$2/" server.properties
 }
 function getInstaller() {
-    if [[ ! -r /etc/os-release ]]; then
-            echo "Error detecting operating system (does /etc/os-release exist?)"
-        exit 100
-    fi
-    # this file comes with most distros and has a bunch of shell variables
-    source /etc/os-release
-    # first ubuntu and debian
-    case $VERSION_CODENAME in
-       "focal" | "ulyssa")
+	if [[ ! -r /etc/os-release ]]; then
+		echo "Error detecting operating system (does /etc/os-release exist?)"
+		exit 100
+	fi
+	# this file comes with most distros and has a bunch of shell variables
+	source /etc/os-release
+	# first ubuntu and debian
+	case $VERSION_CODENAME in
+		"focal" | "ulyssa")
 			installName="focal.sh" 
 		;;
-       "buster")
+		"buster")
 			installName="buster.sh" 
 		;;
-        *)
+		*)
 			echo "Unsupported os, for now"
 			exit 101
-        ;;
-    esac
+		;;
+	esac
 	dload $BASEURL/$BRANCH/installers/$installName - | bash
 	return 0
 }
@@ -139,7 +178,7 @@ case $1 in
 		echo -e "(try https://${ipAddrShow} or https://${serverHostname})"
 		;;
 	"minecraft-only")
-		echo -e "\e[1;32mMinecraft is installed and running (pid $(pidof java))! \e[1;35m^O^\e[0m"
+		echo -e "\e[1;32mMinecraft is installed at ${INSTALLPATH}! Start it with java or with \e[0mservice minecraft start. \e[1;35m^O^\e[0m"
 	;;
 	"uninstall")
 		echo -e "Pink Wool and Minecraft have been removed from your system."
@@ -152,12 +191,12 @@ echo -e "$HEARTS"
 exit 0
 }
 function pwBackup() {
-	testExit  "[[ ! -d ${INSTALLPATH}www/admin/backups/ ]]" "Backup directory doesn't exist" 104
+	testExit "[[ ! -d ${INSTALLPATH}www/admin/backups/ ]]" "Backup directory doesn't exist" 104
 	/usr/bin/zip -r ${INSTALLPATH}www/admin/backups/minecraft-$(date +%F-%H%M).zip ${INSTALLPATH} -x *.sh -x *.zip
 	chown caddy:minecraft ${INSTALLPATH}www/admin/backups/*
 	return 0
 }
-function downloadPanel() {
+function getPanelFiles() {
 	cd ${INSTALLPATH}www
 	testExit "[[ $? -ne 0 ]]" "Couldn't change to the panel directory... does it exist??" 102
 	if [[ ! -f index.php ]]; then
@@ -188,7 +227,7 @@ function pwUpdate() {
 		readGreen 1 "Install the remote version?" updateOK
 		case $updateOK in 
 			1|Y|y)
-				downloadPanel
+				getPanelFiles
 				victory update
 				;;
 			*)
@@ -254,6 +293,19 @@ function pwUninstall() {
 		esac
 	exit 0
 }
+function installMinecraft() {
+	eval $downloadEval
+	useradd -r -m -U -d ${INSTALLPATH} -s /bin/false minecraft &> /dev/null
+	# downloads a per-distro script to get java, caddy, etc
+	getInstaller
+	cd $INSTALLPATH
+	echo "Running Minecraft once so we can generate a eula.txt & agree to it..."
+	/usr/bin/java -jar ${INSTALLPATH}server.jar nogui
+	testExit '[[ ! -w "eula.txt" ]]' "Something weird happened... there should be a writeable eula.txt here and there isn't. Maybe that means java didn't run successfully. Sorry, but this error is super fatal! Quitting~" 99
+	sed -i 's/^eula=false/eula=true/' eula.txt
+	echo -e $GOK
+	return 0
+}
 function pwMenu() {
 	unset mainMenuAction
 	echo -e "\e[1;35mHiiii! This is Pink Wool, an interactive installer and control panel for Minecraft!\e[0m"
@@ -269,7 +321,7 @@ function pwMenu() {
 					pwInstall
 				;;
 				2)
-					pwGetMinecraft
+					pwNoPanel
 				;;
 				3)
 					pwUpdate
@@ -303,6 +355,21 @@ function pwExec() {
 	testExit "[[ ! -p ${INSTALLPATH}console.in ]]" "Pipe not found" 105
 	echo "$1" > ${INSTALLPATH}console.in
 	return $?
+}
+function makeFifo() {
+	mkfifo ${INSTALLPATH}console.in
+	touch ${INSTALLPATH}console.out
+}
+function pwNoPanel() {
+	PWNOPANEL=true
+	export PWNOPANEL
+	downloadEval="dload $jarfileURL server.jar"
+	installMinecraft	
+	setFirewall
+	makeService
+	makeFifo
+	setPermissions
+	victory minecraft-only
 }
 function serverProps() {
 	# gameMode
@@ -436,7 +503,7 @@ echo "stop" > ${INSTALLPATH}console.in
 EOB
 	systemctl daemon-reload
 }
-function backupCron() {
+function makeBackupCron() {
 	if [[ $backupMinute -ge 0 ]]; then
 		mkdir ${INSTALLPATH}www/admin/backups
 		echo "$backupMinute $backupHour * * * minecraft /usr/bin/zip -r ${INSTALLPATH}www/admin/backups/minecraft-$(date +%F-%H-%M).zip ${INSTALLPATH} -x *.sh -x *.zip &> /dev/null" > /etc/cron.d/minecraft-backup
@@ -494,20 +561,23 @@ function setFirewall() {
 	ufw allow 25565 &> /dev/null
 	service ufw restart &> /dev/null
 }
-function panelInstaller() {
+function installPanel() {
+	PHPVER=$(php -v | grep -Po '(?<=PHP )([0-9].[0-9])')
 	httpPass=$(caddy hash-password --plaintext "$httpPass")
 	cat <<EOC > /etc/caddy/Caddyfile
 $ipAddrShow, $serverHostname
 root * ${INSTALLPATH}www
 file_server 
-php_fastcgi unix//run/php/php7.4-fpm.sock
+php_fastcgi unix//run/php/php${PHPVER}-fpm.sock
 basicauth /admin/* {
 	$httpUser $httpPass
 }
 EOC
 	echo '$ a www-data ALL=(ALL) NOPASSWD:/usr/sbin/pink-wool' | EDITOR="sed -f- -i" visudo
-	downloadPanel
+	getPanelFiles
 	service caddy restart
+	cd ${INSTALLPATH}
+	return 0
 }
 function pwInstall() {
 	testExit "[[ $EUID -ne 0 ]]" "You need to be root (sudo -s)" 91
@@ -579,46 +649,7 @@ function pwInstall() {
 				;;
 			esac
 	done
-	# ask for and set server.properties now
-	cat <<EODEFAULT > server.properties
-	#Minecraft server properties
-	#(last boot timestamp)
-	spawn-protection=16
-	max-tick-time=60000
-	query.port=25565
-	force-gamemode=false
-	allow-nether=true
-	gamemode=survival
-	enable-query=false
-	player-idle-timeout=0
-	difficulty=easy
-	spawn-monsters=true
-	op-permission-level=4
-	pvp=true
-	level-type=default
-	enable-status=true
-	hardcore=false
-	enable-command-block=false
-	max-players=20
-	max-world-size=29999984
-	function-permission-level=2
-	rcon.port=25575
-	server-port=25565
-	spawn-npcs=true
-	allow-flight=false
-	level-name=world
-	view-distance=10
-	spawn-animals=true
-	white-list=false
-	rcon.password=
-	generate-structures=true
-	online-mode=true
-	level-seed=
-	prevent-proxy-connections=false
-	use-native-transport=true
-	motd=${defaultMotd}
-	enable-rcon=false
-EODEFAULT
+	echo -e "$SERVERPROPS" > ${INSTALLPATH}server.properties
 	if [[ $goConfig != "n" && $goConfig != "N" ]]; then
 		allProps
 	fi
@@ -627,28 +658,12 @@ EODEFAULT
 	while [[ $watchman ]]; do
 		showVars
 	done
-	# jar file
-	eval $downloadEval
-	useradd -r -m -U -d ${INSTALLPATH} -s /bin/false minecraft &> /dev/null
-	# downloads a per-distro script to get java, caddy, etc
-	getInstaller
-	cd $INSTALLPATH
-	echo "Running Minecraft once so we can generate a eula.txt & agree to it..."
-	/usr/bin/java -jar ${INSTALLPATH}server.jar nogui
-	testExit '[[ ! -w "eula.txt" ]]' "Something weird happened... there should be a writeable eula.txt here and there isn't. Maybe that means java didn't run successfully. Sorry, but this error is super fatal! Quitting~" 99
-	sed -i 's/^eula=false/eula=true/' eula.txt
-	echo -e $GOK
-	panelInstaller
-	# oops, needed this
-	cd $INSTALLPATH
+	installMinecraft
+	installPanel
 	setFirewall
-	# sets up the system service
 	makeService
-	# rcon replacement
-	mkfifo console.in
-	touch console.out
-	# installs cronjobs if they were requested
-	backupCron
+	makeFifo
+	makeBackupCron
 	setPermissions
 	service minecraft start
 	testExit "[[ $? -gt 0 ]]" "Oh no... system service! Why??" 97
@@ -689,7 +704,7 @@ case $1 in
 		pwMenu
 	;;
 	"minecraft-only")
-		pwGetMinecraft
+		pwNoPanel
 		exit 0
 	;;
 	"version")
@@ -697,7 +712,7 @@ case $1 in
 		exit 0
 	;;
 	"do"|"exec")
-		pwExec $2
+		pwExec "$2"
 		exit 0
 	;;
 	# secret options :o
