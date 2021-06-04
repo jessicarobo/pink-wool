@@ -82,7 +82,7 @@ function dload() {
 			which curl
 			testExit "[[ $? -ne 0 ]]" "wget and curl not found" 102
 			# otherwise, I guess curl was found
-			curl -s -o "$2" $1
+			curl -s $1 -o "$2"
 		fi
 	fi
 }
