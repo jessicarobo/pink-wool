@@ -14,7 +14,7 @@ apt update -y &> /dev/null
 apt install -y $dependencies &> /dev/null
 # get caddy 
 if [[ $getCaddy ]]; then
-	wget https://github.com/caddyserver/caddy/releases/download/v${caddyVersion}/caddy_${caddyVersion}_linux_amd64.deb #&> /dev/null
+	wget https://github.com/caddyserver/caddy/releases/download/v${CADDYVERSION}/caddy_${CADDYVERSION}_linux_amd64.deb #&> /dev/null
 	dpkg -i caddy_${CADDYVERSION}_linux_amd64.deb #&> /dev/null
 	rm caddy_${CADDYVERSION}_linux_amd64.deb #&> /dev/null
 fi
