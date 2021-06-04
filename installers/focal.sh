@@ -11,7 +11,6 @@ if [[ ! $(which apt) ]]; then
 fi
 echo "Using 'focal.sh' to run APT and dpkg commands..."
 apt update -y &> /dev/null
-apt upgrade -y &> /dev/null
 apt install -y $dependencies &> /dev/null
 # get caddy 
 if [[ $getCaddy ]]; then
