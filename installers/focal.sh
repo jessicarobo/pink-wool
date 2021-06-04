@@ -6,7 +6,7 @@ if [[ $PWNOPANEL ]]; then
 	unset getCaddy
 fi
 if [[ ! $(which apt) ]]; then 
-	echo "This script is intended for Debian/Ubuntu and requires APT, but couldn't find it." 
+	echo "This script is intended for 64bit Debian/Ubuntu and requires APT, but couldn't find it." 
 	exit 90
 fi
 echo "Using 'focal.sh' to run APT and dpkg commands..."
