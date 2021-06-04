@@ -154,8 +154,16 @@ function getInstaller() {
 			installName="buster.sh" 
 		;;
 		*)
-			echo "Unsupported os, for now"
-			exit 101
+			# i hope this is legal
+			case $PRETTY_NAME in
+				"CentOS Stream 8")
+					installName="centos8.sh"
+				;;
+				*)
+					echo "Unsupported os, for now"
+					exit 101
+				;;
+			esac
 		;;
 	esac
 	dload $BASEURL/$BRANCH/installers/$installName - | bash
@@ -167,7 +175,7 @@ function setPermissions() {
 	chmod 700 ${INSTALLPATH}minecraft-st* &> /dev/null
 	chmod -R 770 ${INSTALLPATH}www/admin/backups &> /dev/null
 	chmod 660 ${INSTALLPATH}console.* &> /dev/null
-	usermod -G caddy -a minecraft
+	usermod -G caddy -a minecraft &> /dev/null
 }
 function victory() {
 clear
@@ -178,7 +186,7 @@ case $1 in
 		echo -e "(try https://${ipAddrShow} or https://${serverHostname})"
 		;;
 	"minecraft-only")
-		echo -e "\e[1;32mMinecraft is installed at ${INSTALLPATH}! Start it with java or with \e[0mservice minecraft start. \e[1;35m^O^\e[0m"
+		echo -e "\e[1;32mMinecraft is installed at ${INSTALLPATH}!\nStart it with java or with \e[0mservice minecraft start. \e[1;35m^O^\e[0m"
 	;;
 	"uninstall")
 		echo -e "Pink Wool and Minecraft have been removed from your system."
@@ -294,11 +302,11 @@ function pwUninstall() {
 	exit 0
 }
 function installMinecraft() {
-	eval $downloadEval
 	useradd -r -m -U -d ${INSTALLPATH} -s /bin/false minecraft &> /dev/null
 	# downloads a per-distro script to get java, caddy, etc
 	getInstaller
 	cd $INSTALLPATH
+	eval $downloadEval
 	echo "Running Minecraft once so we can generate a eula.txt & agree to it..."
 	/usr/bin/java -jar ${INSTALLPATH}server.jar nogui
 	testExit '[[ ! -w "eula.txt" ]]' "Something weird happened... there should be a writeable eula.txt here and there isn't. Maybe that means java didn't run successfully. Sorry, but this error is super fatal! Quitting~" 99
