@@ -79,10 +79,10 @@ function dload() {
 			wget -q -O "$2" $1
 			return 0
 		else
-			which curl
+			which curl &> /dev/null
 			testExit "[[ $? -ne 0 ]]" "wget and curl not found" 102
 			# otherwise, I guess curl was found
-			curl -s $1 -o "$2"
+			curl -s -o "$2" $1
 		fi
 	fi
 }
@@ -153,6 +153,9 @@ function getInstaller() {
 		"buster")
 			installName="buster.sh" 
 		;;
+		"bullseye")
+			installName="bullseye.sh"
+		;;
 		*)
 			# i hope this is legal
 			case $PRETTY_NAME in
@@ -166,6 +169,7 @@ function getInstaller() {
 			esac
 		;;
 	esac
+	export installName
 	dload $BASEURL/$BRANCH/installers/$installName - | bash
 	return 0
 }
@@ -217,9 +221,9 @@ function getPanelFiles() {
 	dload $BASEURL/$BRANCH/panel/adminindex.php admin/index.php
 	dload $BASEURL/$BRANCH/panel/service.php admin/service.php
 	dload $BASEURL/$BRANCH/panel/backup.php admin/backup.php
-	dload $BASEURL/$BRANCH/pink-wool.sh /usr/sbin/pink-wool
+	dload $BASEURL/$BRANCH/pink-wool.sh /usr/bin/pink-wool
 	testExit "[[ $? -ne 0 ]]" "Couldn't download panel: err $?" 103
-	chmod 500 /usr/sbin/pink-wool
+	chmod 500 /usr/bin/pink-wool
 }
 function pwUpdate() {
 	testExit "[[ $EUID -ne 0 ]]" "You need to be root (sudo -s)" 91
@@ -290,8 +294,8 @@ function pwUninstall() {
 				fi
 				rm -rf ${INSTALLPATH}
 				rm /etc/cron.d/minecraft-backup
-				rm -f /usr/sbin/pink-wool
-				testExit "[[ -f /usr/sbin/pink-wool ]]" "Didn't work :o" 110
+				rm -f /usr/bin/pink-wool
+				testExit "[[ -f /usr/bin/pink-wool ]]" "Didn't work :o" 110
 				deluser minecraft &> /dev/null
 				victory uninstall
 			;;
@@ -317,7 +321,7 @@ function installMinecraft() {
 function pwMenu() {
 	unset mainMenuAction
 	echo -e "\e[1;35mHiiii! This is Pink Wool, an interactive installer and control panel for Minecraft!\e[0m"
-	echo -e "By running this, you \e[0;34magree to the Minecraft eula\e[0m, so make sure you read it!"
+	echo -e "By running this, you \e[1;34magree to the Minecraft eula\e[0m, so make sure you read it!"
 	echo -e "\e[1;31mPush CTRL+C at any time to quit!\e[0m\n"
 	echo -e "\e[1;35m~Main Menu~\e[0m"
 		while [[ -z $mainMenuAction ]]; do
@@ -562,12 +566,22 @@ function showVars() {
 	fi
 }
 function setFirewall() {
-	ufw default deny incoming &> /dev/null
-	ufw default allow outgoing &> /dev/null
-	ufw allow 443 &> /dev/null
-	ufw allow ssh &> /dev/null
-	ufw allow 25565 &> /dev/null
-	service ufw restart &> /dev/null
+	if [[ $(which ufw) ]]; then
+		ufw default deny incoming &> /dev/null
+		ufw default allow outgoing &> /dev/null
+		ufw allow 443 &> /dev/null
+		ufw allow ssh &> /dev/null
+		ufw allow 25565 &> /dev/null
+		service ufw restart &> /dev/null
+		return 0
+	fi
+	if [[ $(which firewall-cmd) ]]; then
+		firewall-cmd --permanent --add-port=25565/tcp
+		firewall-cmd --permanent --add-port=https
+		firewall-cmd --permanent --add-port=ssh
+		systemctl restart firewalld &> /dev/null
+		return 0
+	fi
 }
 function installPanel() {
 	PHPVER=$(php -v | grep -Po '(?<=PHP )([0-9].[0-9])')
@@ -581,7 +595,7 @@ basicauth /admin/* {
 	$httpUser $httpPass
 }
 EOC
-	echo '$ a www-data ALL=(ALL) NOPASSWD:/usr/sbin/pink-wool' | EDITOR="sed -f- -i" visudo
+	echo '$ a www-data ALL=(ALL) NOPASSWD:/usr/bin/pink-wool' | EDITOR="sed -f- -i" visudo
 	getPanelFiles
 	service caddy restart
 	cd ${INSTALLPATH}
