@@ -4,7 +4,7 @@ dependencies="ufw zip php-fpm sudo"
 getCaddy="true"
 javaDeb="zulu16.30.15-ca-jre16.0.1-linux_amd64.deb"
 if [[ $PWNOPANEL ]]; then
-	unset dependencies
+	dependencies="java-common libasound2"
 	unset getCaddy
 fi
 if [[ ! $(which apt) ]]; then 
@@ -18,7 +18,7 @@ if [[ $dependencies ]]; then
 fi
 echo -e "$GOK"
 echo "Getting Java 16 from Azul..."
-wget "https://cdn.azul.com/zulu/bin/${javaDeb}" ##&> /dev/null
+wget "https://cdn.azul.com/zulu/bin/${javaDeb}" &> /dev/null
 dpkg -i ${javaDeb} ##&> /dev/null
 rm ${javaDeb} &> /dev/null
 if [[ ! $(which java) ]]; then 
