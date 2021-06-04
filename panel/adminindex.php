@@ -6,7 +6,7 @@
 <body>
   <h1>Pink Wool Admin Panel</h1>
 	<?php
-		exec("sudo /usr/sbin/pink-wool status",$out,$err);
+		exec("sudo /usr/bin/pink-wool status",$out,$err);
 		echo '<h2>Backend status:</h2><ol>';
 		foreach ($out as $o) {
 			echo "<li>$o</li>";
