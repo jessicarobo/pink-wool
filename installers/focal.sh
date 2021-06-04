@@ -1,5 +1,5 @@
 #!/bin/bash
-dependencies="openjdk-16-jre-headless ufw zip php-fpm"
+dependencies="openjdk-16-jre-headless zip php-fpm"
 getCaddy="true"
 if [[ $PWNOPANEL ]]; then
 	dependencies="openjdk-16-jre-headless"
