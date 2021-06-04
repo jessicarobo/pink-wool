@@ -1,7 +1,8 @@
 #!/bin/bash
+# Pink Wool install script for Debian 10 (buster)
 dependencies="ufw zip php-fpm"
 getCaddy="true"
-$javaURL="https://download.java.net/java/GA/jdk16.0.1/7147401fd7354114ac51ef3e1328291f/9/GPL/openjdk-16.0.1_linux-x64_bin.tar.gz"
+javaDeb="zulu16.30.15-ca-jre16.0.1-linux_amd64.deb"
 if [[ $PWNOPANEL ]]; then
 	unset dependencies
 	unset getCaddy
@@ -17,9 +18,9 @@ if [[ $dependencies ]]; then
 fi
 echo -e "$GOK"
 echo "Getting Java 16 from Azul..."
-wget https://cdn.azul.com/zulu/bin/zulu16.30.15-ca-jre16.0.1-linux_amd64.deb &> /dev/null
-dpkg -i zulu16.30.15-ca-jre16.0.1-linux_amd64.deb &> /dev/null
-rm zulu16.30.15-ca-jre16.0.1-linux_amd64.deb &> /dev/null
+wget "https://cdn.azul.com/zulu/bin/${javaDeb}" &> /dev/null
+dpkg -i ${javaDeb} &> /dev/null
+rm ${javaDeb} &> /dev/null
 if [[ ! $(which java) ]]; then 
 	echo "Failed to install dependencies (Java not found)"
 	exit 106
