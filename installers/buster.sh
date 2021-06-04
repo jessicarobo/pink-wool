@@ -1,6 +1,6 @@
 #!/bin/bash
 # Pink Wool install script for Debian 10 (buster)
-dependencies="ufw zip php-fpm"
+dependencies="ufw zip php-fpm sudo"
 getCaddy="true"
 javaDeb="zulu16.30.15-ca-jre16.0.1-linux_amd64.deb"
 if [[ $PWNOPANEL ]]; then
@@ -18,8 +18,8 @@ if [[ $dependencies ]]; then
 fi
 echo -e "$GOK"
 echo "Getting Java 16 from Azul..."
-wget "https://cdn.azul.com/zulu/bin/${javaDeb}" &> /dev/null
-dpkg -i ${javaDeb} &> /dev/null
+wget "https://cdn.azul.com/zulu/bin/${javaDeb}" ##&> /dev/null
+dpkg -i ${javaDeb} ##&> /dev/null
 rm ${javaDeb} &> /dev/null
 if [[ ! $(which java) ]]; then 
 	echo "Failed to install dependencies (Java not found)"
@@ -28,11 +28,11 @@ fi
 echo -e "$GOK"
 if [[ $getCaddy ]]; then
     echo "Getting Caddy webserver..."
-	wget https://github.com/caddyserver/caddy/releases/download/v${CADDYVERSION}/caddy_${CADDYVERSION}_linux_amd64.deb &> /dev/null
-	dpkg -i caddy_${CADDYVERSION}_linux_amd64.deb &> /dev/null
-	rm caddy_${CADDYVERSION}_linux_amd64.deb &> /dev/null
+	wget "https://github.com/caddyserver/caddy/releases/download/v${CADDYVERSION}/caddy_${CADDYVERSION}_linux_amd64.deb" &> /dev/null
+	dpkg -i caddy_${CADDYVERSION}_linux_amd64.deb ##&> /dev/null
+	rm caddy_${CADDYVERSION}_linux_amd64.deb ##&> /dev/null
     if [[ ! $(which caddy) ]]; then 
-        echo "Failed to install dependencies (Java not found)"
+        echo "Failed to install dependencies (Caddy not found)"
         exit 106
     fi
     echo -e "$GOK"
