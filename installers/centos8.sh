@@ -1,7 +1,7 @@
 #!/bin/bash
 # Pink Wool installer for Centos 8
 getCaddy="true"
-javaRpm="zulu16.30.15-ca-jre16.0.1-linux_amd64.rpm"
+javaRpm="zulu16.30.15-ca-jre16.0.1-linux.x86-64.rpm"
 dependencies="zip php-fpm"
 if [[ $PWNOPANEL ]]; then
 	unset dependencies
@@ -17,7 +17,7 @@ if [[ $dependencies ]]; then
 fi
 echo -e "$GOK"
 echo "Getting Java 16 from Azul..."
-curl -o ${javaRpm} "https://cdn.azul.com/zulu/bin/${javaRpm}" ##&> /dev/null
+curl "https://cdn.azul.com/zulu/bin/${javaRpm}" -o ${javaRpm} ##&> /dev/null
 rpm -i ${javaRpm} ##&> /dev/null
 rm ${javaRpm} &> /dev/null
 if [[ ! $(which java) ]]; then 
