@@ -17,11 +17,9 @@ defaultMotd='A Pink Wool server \\u00A7d^O^'
 PWVERSION='1.0.0'
 BASEURL='https://raw.githubusercontent.com/jessicarobo/pink-wool'
 BRANCH='dev' # CHANGE THIS TO MAIN WHEN YOU COMMIT, YA DOPE   debug r0b0 jjdasda}
-CADDYVERSION="2.3.0"
-export CADDYVERSION
 BADNUMBER="Invalid response. Please enter a number."
 HEARTS='\e[1;31m<3 <3 <3\e[0m ~Jessica'
-GOK='...\e[1;32mOK!\e[0m'
+GOK='[\e[1;32mOK!\e[0m]'
 export GOK
 # I really wouldn't change this
 INSTALLPATH="/var/opt/minecraft/"
@@ -147,7 +145,7 @@ function getInstaller() {
 	source /etc/os-release
 	# first ubuntu and debian
 	case $VERSION_CODENAME in
-		"focal" | "ulyssa")
+		"focal" | "ulyssa" | "hirsute")
 			installName="focal.sh" 
 		;;
 		"buster")
@@ -157,16 +155,16 @@ function getInstaller() {
 			installName="bullseye.sh"
 		;;
 		*)
-			# i hope this is legal
-			case $PRETTY_NAME in
-				"CentOS Stream 8")
-					installName="centos8.sh"
-				;;
-				*)
+#		Until we get CentOS working...
+#			case $PRETTY_NAME in
+#				"CentOS Stream 8")
+#					installName="centos8.sh"
+#				;;
+#				*)
 					echo "Unsupported os, for now"
 					exit 101
-				;;
-			esac
+#				;;
+#			esac
 		;;
 	esac
 	export installName
@@ -518,7 +516,7 @@ EOB
 function makeBackupCron() {
 	if [[ $backupMinute -ge 0 ]]; then
 		mkdir ${INSTALLPATH}www/admin/backups
-		echo "$backupMinute $backupHour * * * minecraft /usr/bin/zip -r ${INSTALLPATH}www/admin/backups/minecraft-$(date +%F-%H-%M).zip ${INSTALLPATH} -x *.sh -x *.zip &> /dev/null" > /etc/cron.d/minecraft-backup
+		echo "$backupMinute $backupHour * * * minecraft /usr/bin/zip -r ${INSTALLPATH}www/admin/backups/minecraft-\$(date +%F-%H%M).zip ${INSTALLPATH} -x *.sh -x *.zip &> /dev/null" > /etc/cron.d/minecraft-backup
 		echo "55 23 * * * minecraft	/usr/bin/find ${INSTALLPATH}www/admin/backups/ -name \*.zip -type f -mtime +7 -delete &> /dev/null" >> /etc/cron.d/minecraft-backup
 	fi
 	return 0
@@ -613,14 +611,14 @@ function pwInstall() {
 	# minecraft username
 	read -e -p $'Enter your \e[1;32mMinecraft username\e[0m (for op)\n>' mcUser
 	# https username
-	read -e -p $'Choose a \e[1;32mcontrol panel username\e[0m (for example, admin or jessica):\n>' httpUser
+	read -e -p $'Choose a \e[1;32mcontrol panel username\e[0m (for example, admin or jessica)\n>' httpUser
 	if [[ -z $httpUser ]]; then
 		httpUser='admin'
 	fi
 	# https password
 	while [[ -z $httpPass ]]; do
-		read -s -p $'Choose a \e[1;32mpassword\e[0m for the web control panel:\n' passGuyOne
-		read -s -p $'Type your \e[1;32mpassword\e[0m again to confirm:\n' passGuyTwo
+		read -s -p $'Choose a \e[1;32mpassword\e[0m for the web control panel\n' passGuyOne
+		read -s -p $'Type your \e[1;32mpassword\e[0m again to confirm\n' passGuyTwo
 		if [[ $passGuyOne == $passGuyTwo ]]; then
 			httpPass=$passGuyOne
 		else
