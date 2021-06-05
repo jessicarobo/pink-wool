@@ -14,9 +14,9 @@ megsFree=$(df -BM | grep -e "/$" | awk '{print $4}' | grep -oe '[0-9]*')
 ramFree=$(free -m | grep 'Mem:' | awk '{print $2}')
 dedotated=$(expr $ramFree - 200)
 defaultMotd='A Pink Wool server \\u00A7d^O^'
+PWVERSION='1.0.0'
 CADDYVERSION="2.3.0"
 export CADDYVERSION
-PWVERSION='1.0.0'
 BASEURL='https://raw.githubusercontent.com/jessicarobo/pink-wool'
 BRANCH='dev' # CHANGE THIS TO MAIN WHEN YOU COMMIT, YA DOPE   debug r0b0 jjdasda}
 BADNUMBER="Invalid response. Please enter a number."
@@ -223,7 +223,7 @@ function getPanelFiles() {
 	dload $BASEURL/$BRANCH/panel/backup.php admin/backup.php
 	dload $BASEURL/$BRANCH/pink-wool.sh /usr/bin/pink-wool
 	testExit "[[ $? -ne 0 ]]" "Couldn't download panel: err $?" 103
-	chmod 500 /usr/bin/pink-wool
+	chmod 755 /usr/bin/pink-wool
 }
 function pwUpdate() {
 	testExit "[[ $EUID -ne 0 ]]" "You need to be root (sudo -s)" 91
@@ -366,7 +366,8 @@ function pwExec() {
 	# pwExec "command"
 	testExit "[[ ! -p ${INSTALLPATH}console.in ]]" "Pipe not found" 105
 	echo "$1" > ${INSTALLPATH}console.in
-	return $?
+	sleep 0.2 # in case of lag
+	tail ${INSTALLPATH}console.out
 }
 function makeFifo() {
 	mkfifo ${INSTALLPATH}console.in
@@ -518,7 +519,7 @@ EOB
 function makeBackupCron() {
 	if [[ $backupMinute -ge 0 ]]; then
 		mkdir ${INSTALLPATH}www/admin/backups
-		echo "$backupMinute $backupHour * * * minecraft /usr/bin/zip -r ${INSTALLPATH}www/admin/backups/minecraft-\$(date +%F-%H%M).zip ${INSTALLPATH} -x *.sh -x *.zip &> /dev/null" > /etc/cron.d/minecraft-backup
+		echo "$backupMinute $backupHour * * * minecraft /usr/bin/pink-wool backup &> /dev/null" > /etc/cron.d/minecraft-backup
 		echo "55 23 * * * minecraft	/usr/bin/find ${INSTALLPATH}www/admin/backups/ -name \*.zip -type f -mtime +7 -delete &> /dev/null" >> /etc/cron.d/minecraft-backup
 	fi
 	return 0
