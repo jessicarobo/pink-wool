@@ -12,26 +12,26 @@ if [[ ! $(which apt) ]]; then
 	echo "This script is intended for 64bit Debian/Ubuntu and requires APT, but couldn't find it." 
 	exit 90
 fi
-echo "Using 'bullseye.sh' to run APT and dpkg commands..."
-apt update -y ##&> /dev/null
+echo -n "Using 'bullseye.sh' to run APT and dpkg commands... "
+apt update -y &> /dev/null
 if [[ $dependencies ]]; then
-    apt install -y $dependencies ##&> /dev/null
+    apt install -y $dependencies &> /dev/null
 fi
 echo -e "$GOK"
-echo "Getting Java 16 from Azul..."
-wget "https://cdn.azul.com/zulu/bin/${javaDeb}" ##&> /dev/null
-dpkg -i ${javaDeb} ##&> /dev/null
-rm ${javaDeb} ##&> /dev/null
+echo -n "Getting Java 16 from Azul... "
+wget "https://cdn.azul.com/zulu/bin/${javaDeb}" &> /dev/null
+dpkg -i ${javaDeb} &> /dev/null
+rm ${javaDeb} &> /dev/null
 if [[ ! $(which java) ]]; then 
 	echo "Failed to install dependencies (Java not found)"
 	exit 106
 fi
 echo -e "$GOK"
 if [[ $getCaddy ]]; then
-    echo "Getting Caddy webserver..."
-	wget "https://github.com/caddyserver/caddy/releases/download/v${CADDYVERSION}/caddy_${CADDYVERSION}_linux_amd64.deb" ##&> /dev/null
-	dpkg -i caddy_${CADDYVERSION}_linux_amd64.deb ##&> /dev/null
-	rm caddy_${CADDYVERSION}_linux_amd64.deb ##&> /dev/null
+    echo -n "Getting Caddy webserver... "
+	wget "https://github.com/caddyserver/caddy/releases/download/v${CADDYVERSION}/caddy_${CADDYVERSION}_linux_amd64.deb" &> /dev/null
+	dpkg -i caddy_${CADDYVERSION}_linux_amd64.deb &> /dev/null
+	rm caddy_${CADDYVERSION}_linux_amd64.deb &> /dev/null
     if [[ ! $(which caddy) ]]; then 
         echo "Failed to install dependencies (Caddy not found)"
         exit 106
