@@ -1,8 +1,8 @@
-# pink-wool
+# Pink Wool
 BASH installation script and simple control panel for Minecraft
 
 This can:
-- Install Minecraft as a service on a 64-bit Ubuntu Linux server
+- Install Minecraft as a service on a 64-bit Linux server
 - Configure some of server.properties
 - Create daily .zip backups
 - Create a web-based control panel
@@ -10,10 +10,8 @@ This can:
 ## When would I use this?
 When:
 - You have a Linux server with a supported distribution
-- You plan to use it for **only** 1 Minecraft server and 
-- You don't care if this script runs destructively, changing whatever it wants to change. 
-
-Running this to reinstall Minecraft might not work, and would be unwise!
+- You plan to use it for (currently) **only** 1 Minecraft server and 
+- You don't care if this script runs destructively, changing whatever it wants to change (apt/rpm, systemd, Caddy configuration, etc). 
 
 The control panel is a [Caddy](https://caddyserver.com) HTTPS server hosting a few PHP files with basic auth. If you don't have a fully qualified domain name, your cert will be self-signed but functioning.
 
@@ -21,10 +19,12 @@ Tested and working on:
 - Ubuntu 20.04 LTS (recommended)
 - Ubuntu 21.04
 - Mint 20.1
+- Debian 10
+- Debian 11
 
-Won't work on:
-- Debian 10 (repositories have Java 11 instead of 16)
-- Debian 11 (repositories have Java 17 instead of 16)
+Won't work (yet) on:
+- Linux distributions based on something other than APT
+- Architectures other than 64-bit
 
 ## Installation
 
@@ -34,7 +34,6 @@ You will need to be root for the installation.
 
 `wget https://raw.githubusercontent.com/jessicarobo/pink-wool/main/pink-wool.sh -O - | bash`
 
-It will ask you a number of questions for the control panel and for server.properties, then it should just run until finished.
 
 ![pink-wool installer](pink-wool-install.png)
 
@@ -42,15 +41,27 @@ For post-install configuration, most of the relevant files will be in `/var/opt/
 
 ![pink-wool admin panel](pink-wool-panel.png)
 
+## Commands
+
+pink-wool.sh COMMAND
+
+- **install**: installs Minecraft and the Pink Wool control panel, and all dependencies like Java and Caddy
+- **minecraft-only**: non-interactively installs Minecraft and a systemd service
+- **uninstall**: deletes Pink Wool and the folder where it installed Minecraft
+- **update**: checks for a new version for Pink Wool
+- **backup**: Saves the Minecraft folder as a .zip (works best if Minecraft is not running)
+- **do "RCON COMMAND"**: sends a command to the Minecraft console! For example, `do "say hiiii"` or `do "op JessicaRobo"`
+- **help**: help
+
+Web control panel commands: start, stop, restart, backup
+
 ## To-do
 
 - tutorial video
-- uninstaller
-- updater
-- ability to input rcon commands directly into the web panel, at the very least `say` and `op`
-- implement (programmer word meaning "steal") xpaw's status php
-- broader distro support (get Java for both Debians and later Ubuntus)
-- More consistent style (no colons after questions)
+- beefier control panel (better ui, support for update and exec)
+- implement (programmer word meaning "steal") xpaw's status php (maybe no longer needed)
+- broader distro support (CentOS is weird)
+- broader architecture support
 
 ## Changelog
 
@@ -60,9 +71,9 @@ For post-install configuration, most of the relevant files will be in `/var/opt/
 -Modular design: the installer fetches a shell script for the user's specific linux distribution
 -Modular design: can upgrade itself over http
 -Commandline arguments, e.g. exec, backup, uninstall
--Uses standard unix named pipes, so no more mcrcon & greater security
+-Uses standard Linux named pipes, so no more mcrcon & greater security
 -Now supports systems with curl instead of wget
--Broader operating system support
+-Broader operating system support (Debians)
 
 ### v0.3
 - More consistent code style (e.g. camelCase variables)
