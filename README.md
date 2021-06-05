@@ -66,14 +66,14 @@ Web control panel commands: start, stop, restart, backup
 ## Changelog
 
 ### v1.0.0
--Semantic versioning (this is the update after v0.3)
--Modular design: instead of one large shell script with everything in it, the PHP/HTML/CSS is separated out
--Modular design: the installer fetches a shell script for the user's specific linux distribution
--Modular design: can upgrade itself over http
--Commandline arguments, e.g. exec, backup, uninstall
--Uses standard Linux named pipes, so no more mcrcon & greater security
--Now supports systems with curl instead of wget
--Broader operating system support (Debians)
+- Semantic versioning (this is the update after v0.3)
+- Modular design: instead of one large shell script with everything in it, the PHP/HTML/CSS is separated out
+- Modular design: the installer fetches a shell script for the user's specific linux distribution
+- Modular design: can upgrade itself over http
+- Commandline arguments, e.g. exec, backup, uninstall
+- Uses standard Linux named pipes, so no more mcrcon & greater security
+- Now supports systems with curl instead of wget
+- Broader operating system support (Debians)
 
 ### v0.3
 - More consistent code style (e.g. camelCase variables)
