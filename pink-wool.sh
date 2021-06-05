@@ -14,6 +14,8 @@ megsFree=$(df -BM | grep -e "/$" | awk '{print $4}' | grep -oe '[0-9]*')
 ramFree=$(free -m | grep 'Mem:' | awk '{print $2}')
 dedotated=$(expr $ramFree - 200)
 defaultMotd='A Pink Wool server \\u00A7d^O^'
+CADDYVERSION="2.3.0"
+export CADDYVERSION
 PWVERSION='1.0.0'
 BASEURL='https://raw.githubusercontent.com/jessicarobo/pink-wool'
 BRANCH='dev' # CHANGE THIS TO MAIN WHEN YOU COMMIT, YA DOPE   debug r0b0 jjdasda}
