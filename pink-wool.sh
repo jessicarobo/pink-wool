@@ -221,6 +221,8 @@ function getPanelFiles() {
 	dload $BASEURL/$BRANCH/panel/adminindex.php admin/index.php
 	dload $BASEURL/$BRANCH/panel/service.php admin/service.php
 	dload $BASEURL/$BRANCH/panel/backup.php admin/backup.php
+	dload $BASEURL/$BRANCH/panel/console.php admin/console.php
+	dload $BASEURL/$BRANCH/panel/pwexec.php admin/pwexec.php
 	dload $BASEURL/$BRANCH/pink-wool.sh /usr/bin/pink-wool
 	testExit "[[ $? -ne 0 ]]" "Couldn't download panel: err $?" 103
 	chmod 755 /usr/bin/pink-wool
