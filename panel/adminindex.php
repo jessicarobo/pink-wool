@@ -41,6 +41,6 @@
 		<p><a href="service.php?do=stop">Stop Minecraft</a></p>
 		<p><a href="service.php?do=restart">Restart Minecraft (stop then start)</a></p>
 		<br></div></div></div>
-<script src="/pink-wool.js"></script>
+<script src="pink-wool.js"></script>
 <?php include("/var/opt/minecraft/www/footer.php");
 ?>
