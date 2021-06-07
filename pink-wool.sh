@@ -179,6 +179,7 @@ function setPermissions() {
 	chmod 700 ${INSTALLPATH}minecraft-st* &> /dev/null
 	chmod -R 770 ${INSTALLPATH}www/admin/backups &> /dev/null
 	chmod 660 ${INSTALLPATH}console.* &> /dev/null
+	chown minecraft:www-data ${INSTALLPATH}console.* &> /dev/null
 	usermod -G caddy -a minecraft &> /dev/null
 }
 function victory() {
