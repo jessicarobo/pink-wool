@@ -216,7 +216,6 @@ function getPanelFiles() {
 		testExit "[[ $? -ne 0 ]]" "Couldn't download panel: err $?" 103
 	fi
 	dload $BASEURL/$BRANCH/panel/pink-wool.css pink-wool.css
-	dload $BASEURL/$BRANCH/panel/pink-wool.js pink-wool.js
 	dload $BASEURL/$BRANCH/panel/header.php header.php
 	dload $BASEURL/$BRANCH/panel/footer.php footer.php
 	dload $BASEURL/$BRANCH/panel/adminindex.php admin/index.php
@@ -224,6 +223,7 @@ function getPanelFiles() {
 	dload $BASEURL/$BRANCH/panel/backup.php admin/backup.php
 	dload $BASEURL/$BRANCH/panel/console.php admin/console.php
 	dload $BASEURL/$BRANCH/panel/pwexec.php admin/pwexec.php
+	dload $BASEURL/$BRANCH/panel/pink-wool.js admin/pink-wool.js
 	dload $BASEURL/$BRANCH/pink-wool.sh /usr/bin/pink-wool
 	testExit "[[ $? -ne 0 ]]" "Couldn't download panel: err $?" 103
 	chmod 755 /usr/bin/pink-wool
