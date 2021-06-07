@@ -33,3 +33,6 @@ footer {
 	border-radius: 16px;
         border: 1px solid rgb(176, 115, 181);
 }
+#pwexec {
+	max-width: 95%;	
+}
