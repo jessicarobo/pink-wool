@@ -216,6 +216,7 @@ function getPanelFiles() {
 		testExit "[[ $? -ne 0 ]]" "Couldn't download panel: err $?" 103
 	fi
 	dload $BASEURL/$BRANCH/panel/pink-wool.css pink-wool.css
+	dload $BASEURL/$BRANCH/panel/pink-wool.js pink-wool.js
 	dload $BASEURL/$BRANCH/panel/header.php header.php
 	dload $BASEURL/$BRANCH/panel/footer.php footer.php
 	dload $BASEURL/$BRANCH/panel/adminindex.php admin/index.php
