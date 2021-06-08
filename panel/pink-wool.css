@@ -1,0 +1,38 @@
+body {
+	background: linear-gradient(#ffe9f0,75%,#ff4d6e);
+	background-attachment: fixed;
+	color: black;
+	font-family: Arial,Helvetica,"Liberation Sans",sans-serif;
+	font-size: 16px;
+	margin: 2em auto;
+	max-width: 840px;
+}
+h1 {
+	font-family: "Lucida Console",monospace;
+}
+a {
+	text-decoration: none;
+	color: #0623c4;
+}
+footer {
+	font-size: 12px;
+	padding: 0px;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+}
+.gridwrap {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-auto-rows: minmax(240px, auto);
+}
+#status li:nth-child(3) {
+	font-weight: bold;
+}
+#helpr {
+	background: rgba(219, 23, 152, 0.1) none repeat scroll 0% 0%;
+	border-radius: 16px;
+        border: 1px solid rgb(176, 115, 181);
+}
+#pwexec {
+	max-width: 95%;	
+}

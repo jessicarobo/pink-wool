@@ -1,36 +1,38 @@
-# pink-wool
+# Pink Wool
 BASH installation script and simple control panel for Minecraft
 
 This can:
-- Install Minecraft as a service on a 64-bit Ubuntu Linux server
+- Install Minecraft as a service on a 64-bit Linux server
 - Configure some of server.properties
 - Create daily .zip backups
 - Create a web-based control panel
 
+The control panel is a [Caddy](https://caddyserver.com) HTTPS server hosting a few PHP files with basic auth. If you don't have a fully qualified domain name, your cert will be self-signed but functioning. The control panel gives you full access to Minecraft's console through the local server, so no `mcrcon` or `screen` is needed.
+
 ## When would I use this?
 When:
-- You have a brand new Ubuntu (or equivalent, specifically with APT and Java 16 available) Linux server 
-- You plan to use it for **only** 1 Minecraft server and 
-- You don't care if this script runs destructively, changing whatever it wants to change. 
-
-Running this to reinstall Minecraft might not work, and would be unwise!
-
-The actual server administration uses [mcrcon](https://github.com/Tiiffi/mcrcon), which will be downloaded as part of the install process. RCON itself is firewalled so that it is only available through the control panel
-
-The control panel is a [Caddy](https://caddyserver.com) HTTPS server hosting a few PHP files with basic auth. If you don't have a fully qualified domain name, your cert will be self-signed but functioning.
+- You have a Linux server with a supported distribution (currently apt-based, like Debian & Ubuntu)
+- You plan to use it for (currently) **only** 1 Minecraft server and 
+- You don't care if this script runs destructively, changing whatever it wants to change (apt/rpm, systemd, Caddy configuration, etc). In particular, this installer overwrites /var/opt/minecraft and /etc/caddy/Caddyfile
 
 Tested and working on:
 - Ubuntu 20.04 LTS (recommended)
 - Ubuntu 21.04
 - Mint 20.1
+- Debian 10
+- Debian 11
 
-Won't work on:
-- Debian 10 (repositories have Java 11 instead of 16)
-- Debian 11 (repositories have Java 17 instead of 16)
+Won't work (yet) on:
+- Linux distributions based on something other than APT
+- Architectures other than 64-bit
+
+Won't work (ever) on:
+- Systems without bash
+- Probably Windows
 
 ## Installation
 
-You will need to be root for the installation.
+Simply download the script and run it as root.
 
 `sudo -s`
 
@@ -40,25 +42,48 @@ You will need to be root for the installation.
 
 `./pink-wool.sh`
 
-It will ask you a number of questions for the control panel and for server.properties, then it should just run until finished.
-
 ![pink-wool installer](pink-wool-install.png)
 
 For post-install configuration, most of the relevant files will be in `/var/opt/minecraft/`.
 
 ![pink-wool admin panel](pink-wool-panel.png)
 
+## Commands
+
+pink-wool.sh COMMAND
+
+- **install**: installs Minecraft and the Pink Wool control panel, and all dependencies like Java and Caddy
+- **minecraft-only**: non-interactively installs Minecraft and a systemd service
+- **uninstall**: deletes Pink Wool and the folder where it installed Minecraft
+- **update**: checks for a new version for Pink Wool
+- **start/stop/restart**: performs the requested action on Minecraft's systemd service
+- **backup**: Saves the Minecraft folder as a .zip (works best if Minecraft is not running)
+- **do "RCON COMMAND"**: sends a command to the Minecraft console! For example, `do "say hiiii"` or `do "op JessicaRobo"`
+- **help**: help
+
+Web control panel commands: start, stop, restart, backup, and a minecraft admin console.
+
 ## To-do
 
-- commandline arguments
 - tutorial video
-- uninstaller
-- updater
-- ability to input rcon commands directly into the web panel
-- implement (programmer word meaning "steal") xpaw's status php
-- broader distro support
+- multiple version support
+- even more control panel stuff (installing new versions, uninstalling, updating)
+- implement (programmer word meaning "steal") xpaw's status php (maybe no longer needed)
+- broader distro support (CentOS is weird)
+- broader architecture support
 
 ## Changelog
+
+### v1.0.0
+- Semantic versioning (this is the update after v0.3)
+- Modular design: instead of one large shell script with everything in it, the PHP/HTML/CSS is separated out
+- Modular design: the installer fetches a shell script for the user's specific linux distribution
+- Modular design: can upgrade itself over http
+- Commandline arguments, e.g. exec, backup, uninstall
+- Uses standard Linux named pipes, so no more mcrcon & greater security
+- Now supports systems with curl instead of wget
+- Broader operating system support (Debians)
+- Console now visible in the control panel :)
 
 ### v0.3
 - More consistent code style (e.g. camelCase variables)
@@ -68,7 +93,6 @@ For post-install configuration, most of the relevant files will be in `/var/opt/
 - Installer understands server.properties defaults
 - Installer has a lot of new cute colors!
 - No longer leaves source .tar.gz or .deb files lying around
-
 
 ### v0.2
 - Can force a backup at any time through the web panel
@@ -90,4 +114,7 @@ For post-install configuration, most of the relevant files will be in `/var/opt/
 
 ## Contact
 Please get in touch if you have comments 
-- Jessica ^O^ https://r0b0.org
+
+❤️ ~Jessica ^O^ 
+
+https://r0b0.org
