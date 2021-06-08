@@ -32,12 +32,15 @@ Won't work (ever) on:
 
 ## Installation
 
-You will need to be root for the installation.
+Simply download the script and run it as root.
 
 `sudo -s`
 
-`wget https://raw.githubusercontent.com/jessicarobo/pink-wool/main/pink-wool.sh -O - | bash`
+`wget https://raw.githubusercontent.com/jessicarobo/pink-wool/main/pink-wool.sh`
 
+`chmod 700 pink-wool.sh`
+
+`./pink-wool.sh`
 
 ![pink-wool installer](pink-wool-install.png)
 
