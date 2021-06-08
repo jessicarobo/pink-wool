@@ -7,7 +7,7 @@
 ########## VARIABLES ###########
 # Change this if you want a different version of minecraft, but make sure you save it as server.jar
 jarfileURL="https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar"
-paperURL="https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/728/downloads/paper-1.16.5-728.jar"
+paperURL="https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/772/downloads/paper-1.16.5-772.jar"
 # Other variables and constants -- you probably don't need to change these
 ipAddrShow=$(ip addr show | grep global | grep -oe "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | head -n 1 )
 megsFree=$(df -BM | grep -e "/$" | awk '{print $4}' | grep -oe '[0-9]*')
