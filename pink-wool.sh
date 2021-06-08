@@ -518,7 +518,7 @@ echo "save-all" > ${INSTALLPATH}console.in
 sleep 3
 echo "stop" > ${INSTALLPATH}console.in 
 EOB
-	systemctl daemon-reload
+	systemctl enable minecraft
 }
 function makeBackupCron() {
 	if [[ $backupMinute -ge 0 ]]; then
