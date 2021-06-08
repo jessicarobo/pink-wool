@@ -7,13 +7,13 @@ This can:
 - Create daily .zip backups
 - Create a web-based control panel
 
+The control panel is a [Caddy](https://caddyserver.com) HTTPS server hosting a few PHP files with basic auth. If you don't have a fully qualified domain name, your cert will be self-signed but functioning. The control panel gives you full access to Minecraft's console through the local server, so no `mcrcon` or `screen` is needed.
+
 ## When would I use this?
 When:
-- You have a Linux server with a supported distribution
+- You have a Linux server with a supported distribution (currently apt-based, like Debian & Ubuntu)
 - You plan to use it for (currently) **only** 1 Minecraft server and 
-- You don't care if this script runs destructively, changing whatever it wants to change (apt/rpm, systemd, Caddy configuration, etc). 
-
-The control panel is a [Caddy](https://caddyserver.com) HTTPS server hosting a few PHP files with basic auth. If you don't have a fully qualified domain name, your cert will be self-signed but functioning.
+- You don't care if this script runs destructively, changing whatever it wants to change (apt/rpm, systemd, Caddy configuration, etc). In particular, this installer overwrites /var/opt/minecraft and /etc/caddy/Caddyfile
 
 Tested and working on:
 - Ubuntu 20.04 LTS (recommended)
@@ -25,6 +25,10 @@ Tested and working on:
 Won't work (yet) on:
 - Linux distributions based on something other than APT
 - Architectures other than 64-bit
+
+Won't work (ever) on:
+- Systems without bash
+- Probably Windows
 
 ## Installation
 
@@ -49,16 +53,18 @@ pink-wool.sh COMMAND
 - **minecraft-only**: non-interactively installs Minecraft and a systemd service
 - **uninstall**: deletes Pink Wool and the folder where it installed Minecraft
 - **update**: checks for a new version for Pink Wool
+- **start/stop/restart**: performs the requested action on Minecraft's systemd service
 - **backup**: Saves the Minecraft folder as a .zip (works best if Minecraft is not running)
 - **do "RCON COMMAND"**: sends a command to the Minecraft console! For example, `do "say hiiii"` or `do "op JessicaRobo"`
 - **help**: help
 
-Web control panel commands: start, stop, restart, backup
+Web control panel commands: start, stop, restart, backup, and a minecraft admin console.
 
 ## To-do
 
 - tutorial video
-- beefier control panel (better ui, support for update and exec)
+- multiple version support
+- even more control panel stuff (installing new versions, uninstalling, updating)
 - implement (programmer word meaning "steal") xpaw's status php (maybe no longer needed)
 - broader distro support (CentOS is weird)
 - broader architecture support
@@ -74,6 +80,7 @@ Web control panel commands: start, stop, restart, backup
 - Uses standard Linux named pipes, so no more mcrcon & greater security
 - Now supports systems with curl instead of wget
 - Broader operating system support (Debians)
+- Console now visible in the control panel :)
 
 ### v0.3
 - More consistent code style (e.g. camelCase variables)
