@@ -18,7 +18,7 @@ PWVERSION='1.0.0'
 CADDYVERSION="2.3.0"
 export CADDYVERSION
 BASEURL='https://raw.githubusercontent.com/jessicarobo/pink-wool'
-BRANCH='dev' # CHANGE THIS TO MAIN WHEN YOU COMMIT, YA DOPE   debug r0b0 jjdasda}
+BRANCH='main'
 BADNUMBER="Invalid response. Please enter a number."
 HEARTS='\e[1;31m<3 <3 <3\e[0m ~Jessica'
 GOK='[\e[1;32mOK!\e[0m]'
